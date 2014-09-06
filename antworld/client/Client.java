@@ -182,14 +182,14 @@ public class Client
   public void mainGameLoop(CommData data)
   {
     AntManager manager = new AntManager(data);
-//    AntLive live = new AntLive(manager, null);
-//
-//    JFrame frame = new JFrame("Live Ant Statistics");
-//    frame.add(live);
-//    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-//    frame.pack();
-//    frame.setLocationRelativeTo(null);
-//    frame.setVisible(true);
+    AntLive live = new AntLive(manager, null);
+
+    JFrame frame = new JFrame("Live Ant Statistics");
+    frame.add(live);
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frame.pack();
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
 
     this.graph = new Graph(antworld.constants.Constants.WORLD_MAP_FILEPATH);
     this.astar = new AStar(graph);
@@ -239,7 +239,7 @@ public class Client
         data = recivedData;
 
         manager.updateAllAnts();
-        //live.update(data.foodSet);
+        live.update(data.foodSet);
 
         if ((myNestName == null) || (data.myTeam != myTeam))
         {
