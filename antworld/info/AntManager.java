@@ -132,23 +132,22 @@ public class AntManager
 	
 	
 	
+	//TODO
 	/**
-	 * Birth ant.
+	 * Births a new ant.
 	 *
-	 * @param data the data
-	 * @param type the type
-	 * @return true, if successful
+	 * @param data the communications data
+	 * @param type the type of ant to birth
 	 */
-	public boolean birthAnt(CommData data, AntType type)
+	public void birthAnt(CommData data, AntType type)
 	{
-	  //TODO
 	  return false;
 	}
 	
 	
 	
 	/**
-	 * Clear all ants.
+	 * Clears all ant lists.
 	 */
 	public void clearAllAnts()
 	{
