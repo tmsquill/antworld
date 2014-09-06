@@ -141,7 +141,7 @@ public class AntManager
 	 */
 	public void birthAnt(CommData data, AntType type)
 	{
-	  return false;
+
 	}
 	
 	
