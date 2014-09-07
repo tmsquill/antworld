@@ -31,23 +31,23 @@ import antworld.info.AntManager;
 
 public class Client
 {
-  private static final boolean      DEBUG        = true;
-  private static final TeamNameEnum myTeam       = TeamNameEnum.Toothachegrass;
-  private static final long         password     = 1039840868147L;
-  private ObjectInputStream         inputStream  = null;
-  private ObjectOutputStream        outputStream = null;
-  private boolean                   isConnected  = false;
-  private NestNameEnum              myNestName   = null;
-  private int                       centerX, centerY;
+  private static final boolean DEBUG = true;
+  private static final TeamNameEnum myTeam = TeamNameEnum.Toothachegrass;
+  private static final long password = 1039840868147L;
+  private ObjectInputStream inputStream = null;
+  private ObjectOutputStream outputStream = null;
+  private boolean isConnected = false;
+  private NestNameEnum myNestName = null;
+  private int centerX, centerY;
 
-  private ArrayList<Ant>            ants         = new ArrayList<Ant>();
+  private ArrayList<Ant> ants = new ArrayList<Ant>();
 
-  private Graph                     graph;
-  private AStar                     astar;
+  private Graph graph;
+  private AStar astar;
 
-  private Socket                    clientSocket;
+  private Socket clientSocket;
 
-  private static Random             random       = Constants.random;
+  private static Random random = Constants.random;
 
   public Client(String host, int portNumber)
   {
@@ -56,14 +56,13 @@ public class Client
     while (!isConnected)
     {
       isConnected = openConnection(host, portNumber);
-      if (!isConnected)
-        try
-        {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e1)
-        {
-        }
+      if (!isConnected) try
+      {
+        Thread.sleep(1000);
+      }
+      catch (InterruptedException e1)
+      {
+      }
     }
     CommData data = chooseNest();
     mainGameLoop(data);
@@ -110,10 +109,8 @@ public class Client
     {
       try
       {
-        if (outputStream != null)
-          outputStream.close();
-        if (inputStream != null)
-          inputStream.close();
+        if (outputStream != null) outputStream.close();
+        if (inputStream != null) inputStream.close();
         clientSocket.close();
       }
       catch (IOException e)
@@ -144,11 +141,9 @@ public class Client
       {
         try
         {
-          if (DEBUG)
-            System.out.println("Client: listening to socket....");
+          if (DEBUG) System.out.println("Client: listening to socket....");
           CommData recvData = (CommData) inputStream.readObject();
-          if (DEBUG)
-            System.out.println("Client: recived <<<<<<<<<" + inputStream.available() + "<...\n" + recvData);
+          if (DEBUG) System.out.println("Client: recived <<<<<<<<<" + inputStream.available() + "<...\n" + recvData);
 
           if (recvData.errorMsg != null)
           {
@@ -219,8 +214,7 @@ public class Client
 
       try
       {
-        if (DEBUG)
-          System.out.println("Client: chooseActions: " + myNestName);
+        if (DEBUG) System.out.println("Client: chooseActions: " + myNestName);
 
         chooseActionsOfAllAnts(data);
 
@@ -231,11 +225,9 @@ public class Client
         outputStream.flush();
         outputStream.reset();
 
-        if (DEBUG)
-          System.out.println("Client: listening to socket....");
+        if (DEBUG) System.out.println("Client: listening to socket....");
         CommData recivedData = (CommData) inputStream.readObject();
-        if (DEBUG)
-          System.out.println("Client: received <<<<<<<<<" + inputStream.available() + "<...\n" + recivedData);
+        if (DEBUG) System.out.println("Client: received <<<<<<<<<" + inputStream.available() + "<...\n" + recivedData);
         data = recivedData;
 
         manager.updateAllAnts();
@@ -289,8 +281,7 @@ public class Client
     CommData sendData = data.packageForSendToServer();
     try
     {
-      if (DEBUG)
-        System.out.println("Client.sendCommData(" + sendData + ")");
+      if (DEBUG) System.out.println("Client.sendCommData(" + sendData + ")");
       outputStream.writeObject(sendData);
       outputStream.flush();
       outputStream.reset();
@@ -334,8 +325,7 @@ public class Client
 
     AntAction action = new AntAction(AntActionType.STASIS);
 
-    if (ant.antData.ticksUntilNextAction > 0)
-      return action;
+    if (ant.antData.ticksUntilNextAction > 0) return action;
 
     if (ant.antData.underground)
     {
@@ -345,8 +335,7 @@ public class Client
       return action;
     }
 
-    if (ant.antData.carryUnits > 0)
-      ant.setActivity(ActivityEnum.CARRYING_FOOD);
+    if (ant.antData.carryUnits > 0) ant.setActivity(ActivityEnum.CARRYING_FOOD);
 
     // If the ant is at the food, pick it up.
     if (ant.getActivity() == ActivityEnum.APPROACHING_FOOD && ant.isDirectionsEmpty())
@@ -357,8 +346,7 @@ public class Client
       return action;
     }
 
-    // If food is around and the ant is not working on getting it, have them get
-    // it.
+    // If food is around and the ant is searching, set course for food.
     else if (!data.foodSet.isEmpty() && ant.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD)
     {
       ant.directions.clear();
@@ -408,7 +396,7 @@ public class Client
       return action;
     }
 
-    // If the ant is not carrying or has found food, look for food.
+    // If the ant is not carrying or found food, look for food.
     else if (ant.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD && ant.isDirectionsEmpty())
     {
       Point randomDestination = new Point();
