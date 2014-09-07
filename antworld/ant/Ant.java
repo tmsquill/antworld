@@ -24,7 +24,6 @@ public class Ant
   	return antID == antData.id ? true : false;
   }
   
-  
   public ActivityEnum getActivity()
   {
     return this.activity;
