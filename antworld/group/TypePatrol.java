@@ -1,19 +1,30 @@
 package antworld.group;
 
+import java.awt.Rectangle;
+import java.util.List;
+import java.util.PriorityQueue;
+
+import antworld.ant.Ant;
 import antworld.astar.Location;
 
 public class TypePatrol extends Group
 {
   private int id;
+  private int size;
+  private Ant leader;
+  private Ant formationPoint;
+  private Ant formationRear;
+  private PriorityQueue<Ant> groupList;
+
+  private Rectangle shape;
   private static GroupTypeEnum type = GroupTypeEnum.PATROL;
   private FormationEnum formation;
   private Location destination;
   private Location Target;
-  private int size;
 
-  public TypePatrol(int id)
+  public TypePatrol(int id, List<Ant> groupList)
   {
-    super(id, type);
+    super(id, type, groupList);
   }
 
   @Override
