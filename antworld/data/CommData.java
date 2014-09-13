@@ -33,26 +33,34 @@ public class CommData implements Serializable
   /** The my team. */
   public volatile TeamNameEnum myTeam;
   
-  //To get the location of your own nest, use: 
-  //    nestData[myNestName.ordinal()].centerX;
-  //    nestData[myNestName.ordinal()].centerY;
-
-  // Return myAntList ordered where the ant's actions are executed from first
-  // element to last.
-  // Set Ant's action
-  // Add ants you want to birth to myAntList.
-  /** The my ant list. */
+  /** list of ants that belong to this team and nest.<br>
+   * The server returns this list with the current ants in this team and their actions.<br>
+   * The client uses this list to tell the server which ants are going to do what.<br>
+   * The client also adds ants to this list to brith an ant form nest resources.<br>
+   * The client returns myAntList to the server with the ants ordered. The ant's actions are 
+   * executed from first element to last.<br><br>
+   * 
+   */
   public volatile ArrayList<AntData> myAntList = new ArrayList<AntData>();
 
   
   
   // To reduce network traffic, set each of these to null when returning
   // CommData to server
-  /** The nest data. */
+  /** The nest data. 
+   * To get the location of your own nest, use: <br>
+   * nestData[myNestName.ordinal()].centerX; <br>
+   * nestData[myNestName.ordinal()].centerY; <br>
+   */
   public volatile NestData[] nestData; // set to null before sending to server.
   
-  /** The food stock pile. */
-  public volatile int[] foodStockPile; // set to null before sending to server.
+  /** The stock pile of each type of food that is in your nest. <br>
+   *  To get a particular food type use:<br>
+   *  foodStockPile[type.ordinal()] where type is a FoodType.<br>
+   *  
+   *  This field should be set to null when sending to the server.<br>
+   * */
+  public volatile int[] foodStockPile; 
   
   /** The enemy ant set. */
   public volatile HashSet<AntData> enemyAntSet;  // set to null before sending to server.

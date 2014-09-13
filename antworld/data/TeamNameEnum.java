@@ -2,6 +2,7 @@ package antworld.data;
 
 public enum TeamNameEnum
 {
+  EMPTY,
   NEARLY_BRAINLESS_BOTS, 
   RANDOM_WALKERS,
   AlkaliMuhly,
