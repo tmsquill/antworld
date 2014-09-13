@@ -15,7 +15,7 @@ public class AntCellRenderer extends DefaultTableCellRenderer
 	{
 		super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		
-		if (Client.getActiveAntManager().getAllMyAnts().get(row).antData.health < 15)
+		if (Client.getActiveAntManager().getAllMyAnts().get(row).getAntData().health < 15)
 		{
 			setBackground(Color.RED);
 		}
