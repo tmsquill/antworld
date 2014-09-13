@@ -14,14 +14,14 @@ import javafx.scene.layout.HBox;
 
 public class AntCommand extends HBox
 {
-  Button buttonRetreat    = createButton("Retreat To Nest");
-  Button buttonGoLocation = createButton("Go To Location");
-  Button buttonGoNest     = createButton("Go To Nest");
-  
-  TextField textGoX = new TextField();
-  TextField textGoY = new TextField();
-  
-  ComboBox comboGoNest = createComboBox(NestNameEnum.values());
+  Button    buttonRetreat    = createButton("Retreat To Nest");
+  Button    buttonGoLocation = createButton("Go To Location");
+  Button    buttonGoNest     = createButton("Go To Nest");
+
+  TextField textGoX          = new TextField();
+  TextField textGoY          = new TextField();
+
+  ComboBox  comboGoNest      = createComboBox(NestNameEnum.values());
 
   public AntCommand()
   {
@@ -60,7 +60,7 @@ public class AntCommand extends HBox
 
     return button;
   }
-  
+
   private <E extends Enum<E>> ComboBox<E> createComboBox(E[] values)
   {
     ObservableList<Enum> options = FXCollections.observableArrayList(values);

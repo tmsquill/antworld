@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -22,78 +23,80 @@ import antworld.data.AntData;
 import antworld.data.FoodData;
 
 public class AntWorldImage extends JLabel
-{	
-	private BufferedImage image;
-	private Graphics2D graphics;
-	
-	private HashMap<Point, Integer> colorMap = new HashMap<Point, Integer>();
-	
-	public AntWorldImage(String filename)
-	{
-		try
-		{
-			this.image = ImageIO.read(this.getClass().getResourceAsStream(filename));
-		}
-		catch (IOException e)
-		{
-			System.out.println("AntWorldImage Error: Unable to read the image file specified by " + filename);
-			e.printStackTrace();
-		}
-		
-		this.graphics = image.createGraphics();
-		this.setIcon(new ImageIcon(image));
-	}
-	
-	public void clearAnts()
-	{
-		for (Entry<Point, Integer> entry : this.colorMap.entrySet())
-		{
-		  this.graphics.setColor(new Color(entry.getValue()));
-		  this.graphics.fillRect(entry.getKey().x - 1, entry.getKey().y - 1, 3, 3);
-		}
-		
-		this.colorMap.clear();
-	}
-	
-	public void paintMyAnts(List<Ant> myAnts)
-	{			
-		this.graphics.setColor(Constants.MY_ANT_COLOR);
-		AntData tmp = null;
-		Iterator<Ant> it = myAnts.iterator();
-		
-		while (it.hasNext())
-		{
-			tmp = it.next().antData;		
-			this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
-			this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
-		}
-	}
-	
-	public void paintEnemyAnts(Set<AntData> enemyAnts)
-	{				
-	  this.graphics.setColor(Constants.ENEMY_ANT_COLOR);
+{
+  private BufferedImage           image;
+  private Graphics2D              graphics;
+
+  private HashMap<Point, Integer> colorMap = new HashMap<Point, Integer>();
+
+  public AntWorldImage(String filename)
+  {
+    try
+    {
+      this.image = ImageIO.read(this.getClass().getResourceAsStream(filename));
+    }
+    catch (IOException e)
+    {
+      System.out.println("AntWorldImage Error: Unable to read the image file specified by " + filename);
+      e.printStackTrace();
+    }
+
+    this.graphics = image.createGraphics();
+    this.setIcon(new ImageIcon(image));
+  }
+
+  public void clearAnts()
+  {
+    for (Entry<Point, Integer> entry : this.colorMap.entrySet())
+    {
+      this.graphics.setColor(new Color(entry.getValue()));
+      this.graphics.fillRect(entry.getKey().x - 1, entry.getKey().y - 1, 3, 3);
+    }
+
+    this.colorMap.clear();
+  }
+
+  public void paintMyAnts(HashMap<Integer, Ant> myAnts)
+  {
+    this.graphics.setColor(Constants.MY_ANT_COLOR);
+    AntData tmp = null;
+    Iterator<Entry<Integer, Ant>> it = myAnts.entrySet().iterator();
+
+    while (it.hasNext())
+    {
+      Map.Entry<Integer, Ant> pairs = it.next();
+      tmp = pairs.getValue().getAntData();
+      this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
+      this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
+      it.remove();
+    }
+  }
+
+  public void paintEnemyAnts(Set<AntData> enemyAnts)
+  {
+    this.graphics.setColor(Constants.ENEMY_ANT_COLOR);
     AntData tmp = null;
     Iterator<AntData> it = enemyAnts.iterator();
-    
+
     while (it.hasNext())
     {
-      tmp = it.next();    
+      tmp = it.next();
       this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
       this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
-	}
-	
-	public void paintFood(Set<FoodData> foodData)
-	{		
-	  this.graphics.setColor(Constants.FOOD_COLOR);
-	  FoodData tmp = null;
+  }
+
+  public void paintFood(Set<FoodData> foodData)
+  {
+    this.graphics.setColor(Constants.FOOD_COLOR);
+    FoodData tmp = null;
     Iterator<FoodData> it = foodData.iterator();
-    
+
     while (it.hasNext())
     {
-      tmp = it.next();    
+      tmp = it.next();
       this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
       this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
-	}
+  }
 }

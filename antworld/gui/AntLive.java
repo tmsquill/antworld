@@ -21,6 +21,7 @@ import javax.swing.SwingUtilities;
 import antworld.ai.AntUtilities;
 import antworld.client.Client;
 import antworld.constants.Constants;
+import antworld.ant.Ant;
 import antworld.data.AntData;
 import antworld.data.AntType;
 import antworld.data.CommData;
@@ -33,9 +34,6 @@ import antworld.info.FoodManager;
 
 public class AntLive extends JPanel
 {
-  private AntManager    antManager;
-  private FoodManager   foodManager;
-
   private AntWorldImage image;
   private JScrollPane   imageScroll;
   private JTable        antTable;
@@ -45,17 +43,14 @@ public class AntLive extends JPanel
 
   public AntLive()
   {
-    this.antManager = Client.getActiveAntManager();
-    this.foodManager = Client.getActiveFoodManager();
-
     this.setLayout(new BorderLayout());
 
     this.image = new AntWorldImage(Constants.WORLD_MAP_FILEPATH);
     this.imageScroll = new JScrollPane(image);
-    this.model = new AntTableModel(new ArrayList<Ant>(antManager.getAllMyAnts().values()));
+    this.model = new AntTableModel(new ArrayList<Ant>(Client.getActiveAntManager().getAllMyAnts().values()));
     this.antTable = new JTable(model);
     this.tableScroll = new JScrollPane(antTable);
-    this.antControl = new AntControl(antManager, foodManager);
+    this.antControl = new AntControl(Client.getActiveAntManager(), Client.getActiveFoodManager());
 
     // Add the AntImage
     this.imageScroll.setPreferredSize(new Dimension(700, 500));
@@ -67,7 +62,8 @@ public class AntLive extends JPanel
     this.antTable.setEnabled(false);
     this.antTable.setPreferredSize(this.antTable.getPreferredScrollableViewportSize());
     this.antTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-    //TODO this.antTable.setDefaultRenderer(Object.class, new AntCellRenderer());
+    // TODO this.antTable.setDefaultRenderer(Object.class, new
+    // AntCellRenderer());
     this.add(tableScroll, BorderLayout.LINE_END);
 
     // Add the AntControl
@@ -87,12 +83,11 @@ public class AntLive extends JPanel
           @Override
           public void run()
           {
-            System.out.println("Updating the GUI...");
             // Update the world image.
             image.clearAnts();
-            image.paintMyAnts(antManager.getAllMyAnts());
-            image.paintEnemyAnts(antManager.getAllEnemyAnts());
-            image.paintFood(foodManager.getFoodData());
+            image.paintMyAnts(Client.getActiveAntManager().getAllMyAnts());
+            image.paintEnemyAnts(Client.getActiveAntManager().getAllEnemyAnts());
+            image.paintFood(Client.getActiveFoodManager().getFoodData());
             image.repaint();
 
             // Update the ant table.

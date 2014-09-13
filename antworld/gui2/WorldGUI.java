@@ -1,8 +1,10 @@
 package antworld.gui2;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import antworld.ant.Ant;
 import antworld.client.Client;
 import antworld.info.AntManager;
 import antworld.info.FoodManager;
@@ -32,7 +34,7 @@ public class WorldGUI extends Application
 
   @Override
   public void start(Stage stage)
-  {    
+  {
     this.initializeGUI();
 
     // Add the ant command options to the BorderPane.TOP.
@@ -42,7 +44,7 @@ public class WorldGUI extends Application
     this.image.updateWorldData(antManager, foodManager);
     layout.setCenter(new ScrollPane(image));
 
-    this.table = new WorldTable(this.antManager.getAllMyAnts());
+    this.table = new WorldTable(new ArrayList<Ant>(antManager.getAllMyAnts().values()));
     layout.setRight(new ScrollPane(table));
 
     stage.setTitle("Live Ant Statistics");
@@ -80,18 +82,19 @@ public class WorldGUI extends Application
     this.table.updateWorldData();
   }
 
-  public static void main(String[] args)
-  {
-    Client.initManagers();
-    WorldGUI gui = new WorldGUI();
-    Platform.runLater(new Runnable()
-    {
-      public void run()
-      {
-        gui.start(new Stage());
-      }
-    });
-    System.out.println("Starting Random Walk...");
-    Client.initializeActions(gui);
-  }
+  // TODO - For testing the GUI.
+  // public static void main(String[] args)
+  // {
+  // Client.initManagers();
+  // WorldGUI gui = new WorldGUI();
+  // Platform.runLater(new Runnable()
+  // {
+  // public void run()
+  // {
+  // gui.start(new Stage());
+  // }
+  // });
+  // System.out.println("Starting Random Walk...");
+  // Client.initializeActions(gui);
+  // }
 }
