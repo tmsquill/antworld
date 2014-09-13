@@ -73,14 +73,14 @@ public class AntManager
 		this.antCount.add(new AntCount("Speed", 0));
 		this.antCount.add(new AntCount("Vision", 0));
 		
-		this.updateAllAnts();		
+		this.updateAllAnts(data);		
 	}
 	
 	/**
 	 * Updates the lists in the AntManger object, this method should be called when new
 	 * communications data is recieved from the server.
 	 */
-	public void updateAllAnts()
+	public void updateAllAnts(CommData data)
 	{
 	  Ant tmp = null;
     Iterator<Ant> it = this.allMyAnts.iterator();

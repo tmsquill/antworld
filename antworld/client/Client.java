@@ -256,7 +256,7 @@ public class Client
           System.out.println("Client: received <<<<<<<<<" + inputStream.available() + "<...\n" + recivedData);
         data = recivedData;
 
-        Client.antManager.updateAllAnts();
+        Client.antManager.updateAllAnts(data);
 
         if ((myNestName == null) || (data.myTeam != myTeam))
         {
@@ -327,10 +327,20 @@ public class Client
     {
       tmp = it.next();
       AntAction action = chooseAction(commData, tmp);
-      tmp.antData.myAction = action;
+      tmp.antData.myAction.copyFrom(action);
       if (Client.DEBUG_GENERAL)
-        System.out.println("Chosen action type: " + action.type + ", direction " + action.direction);
+        System.out.println("Returned action type: " + action.type + ", Ant Action Type " +  tmp.antData.myAction);
     }
+
+    
+//    Iterator<AntData> it = commData.myAntList.iterator();
+//
+//    while (it.hasNext())
+//    {
+//      it.next().myAction.type = AntActionType.EXIT_NEST;
+//    }
+    
+    this.printComparisons(commData, antManager);
   }
 
   private AntAction chooseAction(CommData data, Ant ant)
@@ -605,6 +615,40 @@ public class Client
     // action.type = AntActionType.MOVE;
     // action.direction = ant.getNextDirection();
     // }
+  }
+  
+  public void printComparisons(CommData data, AntManager manager)
+  {
+    AntData tmpComm = null;
+    int count = 0;
+    Iterator<AntData> commIt = data.myAntList.iterator();
+    
+    System.out.print("CommData Ants:");
+    
+    while (commIt.hasNext() && count < 5)
+    {
+      count++;
+      tmpComm = commIt.next();    
+      System.out.print(" ID: " + tmpComm.id + " Location: (" + tmpComm.gridX + ", " + tmpComm.gridY + ") Type: " + tmpComm.antType + " Health: " + tmpComm.health + " Action: " + tmpComm.myAction);
+    }
+    
+    System.out.println("\n\n");
+    
+    count = 0;
+    
+    Ant tmpManager = null;
+    Iterator<Ant> managerIt =manager.getAllMyAnts().iterator();
+
+    System.out.print("AntManager Ants:");
+    
+    while (managerIt.hasNext() && count < 5)
+    {
+      count++;
+      tmpManager = managerIt.next();    
+      System.out.print(" ID: " + tmpManager.antData.id + " Location: (" + tmpManager.antData.gridX + ", " + tmpManager.antData.gridY + ") Type: " + tmpManager.antData.antType + " Health: " + tmpManager.antData.health + " Action: " + tmpManager.antData.myAction);
+    }
+    
+    System.out.println();
   }
 
   // TODO This is for testing the GUI only.
