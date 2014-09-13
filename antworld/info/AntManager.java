@@ -78,39 +78,54 @@ public class AntManager
 	
 	/**
 	 * Updates the lists in the AntManger object, this method should be called when new
-	 * communications data is recieved from the server.
+	 * communications data is received from the server.
 	 */
 	public void updateAllAnts(CommData data)
 	{
-	  Ant tmp = null;
-    Iterator<Ant> it = this.allMyAnts.iterator();
+	  Ant ant = null;
+    Iterator<Ant> antIt = this.allMyAnts.iterator();
     
-    while (it.hasNext())
+    AntData antData = null;
+    Iterator<AntData> antDataIt = data.myAntList.iterator();
+    
+    while (antIt.hasNext())
     {
-      tmp = it.next();
+      ant = antIt.next();
+      antData = antDataIt.next();
       
-      if (!tmp.antData.alive)
+      
+      if (ant.getAntID() == antData.id)
       {
-        switch (tmp.antData.antType)
+        // TODO
+        antData = ant.antData;
+//        ant.antData.myAction.copyFrom(antData.myAction);
+//        System.out.println("Copied antData");
+      }
+      else System.out.println("Ant IDs do not match [AM103]");
+      
+      
+      if (!ant.antData.alive)
+      {
+        switch (ant.antData.antType)
         {
-          case ATTACK: this.attackAnts.remove(tmp);
+          case ATTACK: this.attackAnts.remove(ant);
           break;
-          case BASIC: this.basicAnts.remove(tmp);
+          case BASIC: this.basicAnts.remove(ant);
           break;
-          case CARRY: this.carryAnts.remove(tmp);
+          case CARRY: this.carryAnts.remove(ant);
           break;
-          case DEFENCE: this.defenseAnts.remove(tmp);
+          case DEFENCE: this.defenseAnts.remove(ant);
           break;
-          case MEDIC: this.medicAnts.remove(tmp);
+          case MEDIC: this.medicAnts.remove(ant);
           break;
-          case SPEED: this.speedAnts.remove(tmp);
+          case SPEED: this.speedAnts.remove(ant);
           break;
-          case VISION: this.visionAnts.remove(tmp);
+          case VISION: this.visionAnts.remove(ant);
           break;
           default: 
             try
             {
-              throw new InvalidAntTypeException(tmp.antData.antType.toString());
+              throw new InvalidAntTypeException(ant.antData.antType.toString());
             }
             catch (InvalidAntTypeException e)
             {
@@ -118,7 +133,7 @@ public class AntManager
             }
           break;
         }
-      }     
+      }
     }
 		
 		this.antCount.get(0).setCount(this.getAttackAntCount());

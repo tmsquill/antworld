@@ -78,6 +78,11 @@ public class Ant
     this.health = new SimpleStringProperty(Integer.toString(this.antData.health));
     this.underground = new SimpleStringProperty(Boolean.toString(this.antData.underground));
   }
+  
+  public int getAntID()
+  {
+    return this.antID;
+  }
 
   public String getNest()
   {
