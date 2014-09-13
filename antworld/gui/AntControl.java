@@ -29,7 +29,7 @@ public class AntControl extends JTabbedPane
 	public AntControl(AntManager activeAnts, FoodManager activeFood)
 	{
 		this.addTab("Ant Commands", new AntCommand(activeAnts));
-		//this.addTab("Nest Commands", new NestCommand(nestCount));
+		this.addTab("Nest Commands", new NestCommand(activeFood));
 	}
 	
 	public class AntCommand extends JPanel implements ActionListener
@@ -158,7 +158,7 @@ public class AntControl extends JTabbedPane
 		private FoodCountTableModel model;
 		private JTable table;
 
-		public NestCommand(List<FoodCount> nestCount)
+		public NestCommand(FoodManager activeFood)
 		{
 			this.setLayout(new GridBagLayout());
 			
@@ -193,7 +193,7 @@ public class AntControl extends JTabbedPane
 			c.gridy = 0;
 			c.gridwidth = 1;
 			c.gridheight = 2;
-			this.model = new FoodCountTableModel(nestCount);		
+			this.model = new FoodCountTableModel(activeFood.getFoodCounts());		
 			this.table = new JTable(model);
 			this.table.setRowHeight(25);
 			this.table.setGridColor(Color.BLACK);

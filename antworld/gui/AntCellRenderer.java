@@ -6,7 +6,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import antworld.data.AntType;
+import antworld.client.Client;
 
 public class AntCellRenderer extends DefaultTableCellRenderer
 {
@@ -15,7 +15,7 @@ public class AntCellRenderer extends DefaultTableCellRenderer
 	{
 		super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 		
-		if (AntLive.activeAnts.getAllMyAnts().get(row).antData.health < 15)
+		if (Client.getActiveAntManager().getAllMyAnts().get(row).antData.health < 15)
 		{
 			setBackground(Color.RED);
 		}
