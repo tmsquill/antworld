@@ -51,9 +51,7 @@ public class Util
     }
     return loadedImage;
   }
-  
-  
-  
+
   public static int manhattanDistance(int x1, int y1, int x2, int y2)
   {
     int dx = Math.abs(x2 - x1);

@@ -13,16 +13,16 @@ import antworld.constants.GroupTypeEnum;
 
 public abstract class Group implements Comparator<Ant>
 {
-  private int id;
-  private int size;
-  private Ant leader;
-  private Ant formationPoint;
-  private Ant formationRear;
+  private int                id;
+  private int                size;
+  private Ant                leader;
+  private Ant                formationPoint;
+  private Ant                formationRear;
   private PriorityQueue<Ant> groupList;
 
-  private GroupTypeEnum type;
-  private FormationEnum formation;
-  private Rectangle shape;
+  private GroupTypeEnum      type;
+  private FormationEnum      formation;
+  private Rectangle          shape;
 
   public Group(int id, GroupTypeEnum type, List<Ant> group)
   {
@@ -61,8 +61,8 @@ public abstract class Group implements Comparator<Ant>
   @Override
   public int compare(Ant ant1, Ant ant2)
   {
-    if (ant1.antData.carryUnits > ant2.antData.carryUnits) return 1;
-    else if (ant1.antData.carryUnits < ant2.antData.carryUnits) return -1;
+    if (ant1.getAntData().carryUnits > ant2.getAntData().carryUnits) return 1;
+    else if (ant1.getAntData().carryUnits < ant2.getAntData().carryUnits) return -1;
     return 0;
   }
 
@@ -96,7 +96,8 @@ public abstract class Group implements Comparator<Ant>
   public void setFormationPoint(Ant formationPoint)
   {
     Iterator<Ant> it = groupList.iterator();
-    while (it.hasNext()) this.formationPoint = it.next();
+    while (it.hasNext())
+      this.formationPoint = it.next();
   }
 
   public Ant getFormationRear()

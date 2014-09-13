@@ -11,17 +11,17 @@ import antworld.constants.GroupTypeEnum;
 
 public class TypeForager extends Group
 {
-  private int id;
-  private int size;
-  private Ant leader;
-  private Ant formationPoint;
-  private Ant formationRear;
-  private PriorityQueue<Ant> groupList;
+  private int                  id;
+  private int                  size;
+  private Ant                  leader;
+  private Ant                  formationPoint;
+  private Ant                  formationRear;
+  private PriorityQueue<Ant>   groupList;
 
-  private Rectangle shape;
+  private Rectangle            shape;
   private static GroupTypeEnum type = GroupTypeEnum.FORAGER;
-  private FormationEnum formation;
-  private Location destination;
+  private FormationEnum        formation;
+  private Location             destination;
 
   public TypeForager(int id, List<Ant> groupList)
   {

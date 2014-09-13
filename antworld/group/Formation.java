@@ -11,21 +11,21 @@ public class Formation
   {
     this.group = group;
   }
-  
+
   // Entire group moves at the speed of the slowest ant.
   public void keepFormationIntact()
   {
-    
+
   }
 
   // TODO: Methods for each type and formation
-  
+
   public void singleFileFive()
   {
     Ant leader = group.getLeader();
     Ant point = group.getFormationPoint();
     Ant rear = group.getFormationRear();
-    Location leaderLoc = new Location(leader.antData.gridX, leader.antData.gridY);
-    
+    Location leaderLoc = new Location(leader.getAntData().gridX, leader.getAntData().gridY);
+
   }
 }

@@ -1,9 +1,10 @@
 package antworld.astar;
 
 /**
- * This class represents a location on a 2D plane. Objects of this type are immutable.
- * @author Troy Squillaci
- * Date: 08-28-2014
+ * This class represents a location on a 2D plane. Objects of this type are
+ * immutable.
+ * 
+ * @author Troy Squillaci Date: 08-28-2014
  */
 public class Location
 {
@@ -15,23 +16,22 @@ public class Location
     this.x = x;
     this.y = y;
   }
-  
+
   public int getX()
   {
     return this.x;
   }
+
   public int getY()
   {
-    return this.y;  
+    return this.y;
   }
 
   @Override
   public boolean equals(Object o)
   {
-    if (this == o)
-      return true;
-    if (!(o instanceof Location))
-      return false;
+    if (this == o) return true;
+    if (!(o instanceof Location)) return false;
     Location key = (Location) o;
     return x == key.x && y == key.y;
   }
@@ -43,7 +43,7 @@ public class Location
     result = 31 * result + y;
     return result;
   }
-  
+
   @Override
   public String toString()
   {

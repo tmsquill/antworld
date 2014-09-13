@@ -11,17 +11,17 @@ import antworld.constants.GroupTypeEnum;
 
 public class TypeFortress extends Group
 {
-  private int id;
-  private int size;
-  private Ant leader;
-  private Ant formationPoint;
-  private Ant formationRear;
-  private PriorityQueue<Ant> groupList;
+  private int                  id;
+  private int                  size;
+  private Ant                  leader;
+  private Ant                  formationPoint;
+  private Ant                  formationRear;
+  private PriorityQueue<Ant>   groupList;
 
-  private Rectangle shape;
+  private Rectangle            shape;
   private static GroupTypeEnum type = GroupTypeEnum.FORTRESS;
-  private FormationEnum formation;
-  private Location destination;
+  private FormationEnum        formation;
+  private Location             destination;
 
   public TypeFortress(int id, List<Ant> groupList)
   {
@@ -33,13 +33,14 @@ public class TypeFortress extends Group
   {
     switch (formation)
     {
-      case TRAVEL:  // Will be stationary most of the time.
+      case TRAVEL: // Will be stationary most of the time.
         walk(destination);
         break;
       case BATTLE:
-        // TODO: Once the group is in destination, enter formation and remain stationary.
-        //         Once an enemy is in range, attack.  
-        //         Retreat if necessary.
+        // TODO: Once the group is in destination, enter formation and remain
+        //   stationary.
+        // Once an enemy is in range, attack.
+        // Retreat if necessary.
         // Attack Formation
         // Attack Target
         break;
@@ -81,6 +82,5 @@ public class TypeFortress extends Group
   {
     this.size = size;
   }
-
 
 }

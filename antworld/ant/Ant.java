@@ -9,12 +9,12 @@ import antworld.data.Direction;
 
 public class Ant
 {
-	private AntData antData;
-	private int antID;
-	private ActivityEnum activity = ActivityEnum.SEARCHING_FOR_FOOD;
-  public LinkedList<Direction> directions = new LinkedList<Direction>();  
-  
-  //Used by the GUI.
+  private AntData              antData;
+  private int                  antID;
+  private ActivityEnum         activity   = ActivityEnum.SEARCHING_FOR_FOOD;
+  public LinkedList<Direction> directions = new LinkedList<Direction>();
+
+  // Used by the GUI.
   private SimpleStringProperty nest;
   private SimpleStringProperty team;
   private SimpleStringProperty id;
@@ -24,57 +24,54 @@ public class Ant
   private SimpleStringProperty carry;
   private SimpleStringProperty health;
   private SimpleStringProperty underground;
-  
+
   public Ant(AntData antData)
   {
     this.antData = antData;
     this.antID = antData.id;
     this.updateModel();
   }
-  
+
   public boolean verifyID()
   {
-  	return antID == antData.id ? true : false;
+    return antID == antData.id ? true : false;
   }
-  
+
   public ActivityEnum getActivity()
   {
     return this.activity;
   }
-  
+
   public Direction getNextDirection()
   {
     return this.directions.poll();
   }
-  
+
   public boolean isDirectionsEmpty()
   {
-  	return this.directions.isEmpty();
+    return this.directions.isEmpty();
   }
-  
-  
+
   public void setAntData(AntData data)
   {
     this.antData = data;
   }
-  
+
   public AntData getAntData()
   {
     return this.antData;
   }
-  
+
   public void setActivity(ActivityEnum activity)
   {
-  	this.activity = activity;
+    this.activity = activity;
   }
-  
+
   public void setDirections(LinkedList<Direction> directions)
   {
     this.directions = directions;
   }
-  
-  
-  
+
   public void updateModel()
   {
     this.nest = new SimpleStringProperty(this.antData.nestName.toString());
@@ -87,7 +84,7 @@ public class Ant
     this.health = new SimpleStringProperty(Integer.toString(this.antData.health));
     this.underground = new SimpleStringProperty(Boolean.toString(this.antData.underground));
   }
-  
+
   public int getAntID()
   {
     return this.antID;

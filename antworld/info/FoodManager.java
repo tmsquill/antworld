@@ -46,12 +46,12 @@ public class FoodManager
   {
     // TODO Can't currently get individual food resources from CommData.
   }
-  
+
   public List<FoodCount> getFoodCounts()
   {
     return this.foodCount;
   }
-  
+
   public HashSet<FoodData> getFoodData()
   {
     return this.worldFood;

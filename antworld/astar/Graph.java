@@ -41,7 +41,8 @@ public class Graph
     try
     {
       this.image = ImageIO.read(Graph.class.getResourceAsStream(filename));
-    } catch (IOException e)
+    }
+    catch (IOException e)
     {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -92,8 +93,8 @@ public class Graph
 
     for (Direction dir : Direction.values())
     {
-      Location tmpLocation = new Location(node.getLocation().getX()
-          + dir.deltaX(), node.getLocation().getY() + dir.deltaY());
+      Location tmpLocation = new Location(node.getLocation().getX() + dir.deltaX(), node.getLocation().getY()
+          + dir.deltaY());
 
       tmpNode = this.getNode(tmpLocation);
 
@@ -101,8 +102,7 @@ public class Graph
       {
         tmpWeight = this.calcWeight(tmpLocation);
 
-        if (tmpWeight == 'X')
-          continue;
+        if (tmpWeight == 'X') continue;
 
         this.addNode(tmpLocation);
         tmpNode = this.getNode(tmpLocation);
@@ -121,10 +121,7 @@ public class Graph
 
   public char calcWeight(Location location)
   {
-    if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499)
-    {
-      return 'X';
-    }
+    if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) { return 'X'; }
 
     int colorValue = image.getRGB(location.getX(), location.getY());
     char weight = '0';
@@ -132,31 +129,31 @@ public class Graph
     switch (colorValue)
     {
       case 0x0000C0:
-        weight = 'X'; 
+        weight = 'X';
         break;
       case 0x0000C8: // Cannot traverse terrain, not Jesus.
-        weight = 'X'; 
+        weight = 'X';
         break;
       case 0xAA00FF:
-        weight = 'X'; 
+        weight = 'X';
         break;
       case 0xA300F4:
         weight = 'X';
         break;
       case 0x9800E3:
-        weight = 'X'; 
+        weight = 'X';
         break;
       case 0x8E00D5:
         weight = 'X';
         break;
       case 0x8900CD:
-        weight = 'X'; 
+        weight = 'X';
         break;
       case 0x7C00BA:
-        weight = 'X'; 
+        weight = 'X';
         break;
       case 0x7000A8:
-        weight = 'X'; 
+        weight = 'X';
         break;
       default:
         break;

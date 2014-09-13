@@ -326,8 +326,8 @@ public class Client
 
     while (it.hasNext())
     {
-      Map.Entry<Integer, Ant> pairs = (Map.Entry<Integer, Ant>)it.next();
-      
+      Map.Entry<Integer, Ant> pairs = (Map.Entry<Integer, Ant>) it.next();
+
       if (DEBUG_GENERAL) System.out.println(pairs.getKey() + " = " + pairs.getValue());
 
       tmp = pairs.getValue();
@@ -335,8 +335,8 @@ public class Client
       tmp.getAntData().myAction.copyFrom(action);
       if (Client.DEBUG_GENERAL)
         System.out.println("Returned action type: " + action.type + ", Ant Action Type " + tmp.getAntData().myAction);
-      
-      //TODO
+
+      // TODO
       it.remove(); // avoids a ConcurrentModificationException
     }
 
@@ -531,14 +531,14 @@ public class Client
     {
       Map.Entry<Integer, Ant> pairs = (Map.Entry<Integer, Ant>) managerIt.next();
       System.out.println(pairs.getKey() + " = " + pairs.getValue());
-      
+
       count++;
       tmpManager = pairs.getValue();
       System.out.print(" ID: " + tmpManager.getAntData().id + " Location: (" + tmpManager.getAntData().gridX + ", "
           + tmpManager.getAntData().gridY + ") Type: " + tmpManager.getAntData().antType + " Health: "
           + tmpManager.getAntData().health + " Action: " + tmpManager.getAntData().myAction);
-      
-      //TODO
+
+      // TODO
       managerIt.remove();
     }
 
@@ -620,41 +620,41 @@ public class Client
   }
 
   // TODO This is for debugging purposes only.
-//  public static void initializeActions(WorldGUI gui)
-//  {
-//    Random rand = new Random();
-//
-//    while (true)
-//    {
-//      try
-//      {
-//        Thread.sleep(1000);
-//      }
-//      catch (InterruptedException e1)
-//      {
-//      }
-//
-//      Ant tmp = null;
-//      Iterator<Ant> it = Client.antManager.getAllMyAnts().iterator();
-//
-//      while (it.hasNext())
-//      {
-//        tmp = it.next();
-//
-//        tmp.antData.gridX = tmp.antData.gridX + rand.nextInt(3) - 1;
-//        tmp.antData.gridY = tmp.antData.gridY + rand.nextInt(3) - 1;
-//        tmp.updateModel();
-//      }
-//
-//      Platform.runLater(new Runnable()
-//      {
-//        public void run()
-//        {
-//          gui.updateGUI();
-//        }
-//      });
-//    }
-//  }
+  // public static void initializeActions(WorldGUI gui)
+  // {
+  // Random rand = new Random();
+  //
+  // while (true)
+  // {
+  // try
+  // {
+  // Thread.sleep(1000);
+  // }
+  // catch (InterruptedException e1)
+  // {
+  // }
+  //
+  // Ant tmp = null;
+  // Iterator<Ant> it = Client.antManager.getAllMyAnts().iterator();
+  //
+  // while (it.hasNext())
+  // {
+  // tmp = it.next();
+  //
+  // tmp.antData.gridX = tmp.antData.gridX + rand.nextInt(3) - 1;
+  // tmp.antData.gridY = tmp.antData.gridY + rand.nextInt(3) - 1;
+  // tmp.updateModel();
+  // }
+  //
+  // Platform.runLater(new Runnable()
+  // {
+  // public void run()
+  // {
+  // gui.updateGUI();
+  // }
+  // });
+  // }
+  // }
 
   public static AntManager getActiveAntManager()
   {
