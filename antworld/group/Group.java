@@ -8,6 +8,8 @@ import java.util.PriorityQueue;
 
 import antworld.ant.Ant;
 import antworld.astar.Location;
+import antworld.constants.FormationEnum;
+import antworld.constants.GroupTypeEnum;
 
 public abstract class Group implements Comparator<Ant>
 {

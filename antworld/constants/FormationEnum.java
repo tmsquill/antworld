@@ -1,5 +1,6 @@
 package antworld.constants;
 
-public class FormationEnum
+public enum FormationEnum
 {
+  TRAVEL, BATTLE
 }

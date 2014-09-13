@@ -6,6 +6,8 @@ import java.util.PriorityQueue;
 
 import antworld.ant.Ant;
 import antworld.astar.Location;
+import antworld.constants.FormationEnum;
+import antworld.constants.GroupTypeEnum;
 
 public class TypeFortress extends Group
 {
