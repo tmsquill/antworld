@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import javafx.application.Platform;
@@ -58,8 +60,8 @@ public class Client
 
   private static AntManager         antManager;
   private static FoodManager        foodManager;
-  
-  //TODO private WorldGUI gui;
+
+  // TODO private WorldGUI gui;
 
   public Client(String host, int portNumber)
   {
@@ -202,12 +204,11 @@ public class Client
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-    
+
     live.update();
-    
-//    if (Client.DEBUG_GENERAL) System.out.println("Starting GUI");
-//    javafx.application.Application.launch(WorldGUI.class);
-    
+
+    // if (Client.DEBUG_GENERAL) System.out.println("Starting GUI");
+    // javafx.application.Application.launch(WorldGUI.class);
 
     this.graph = new Graph(antworld.constants.Constants.WORLD_MAP_FILEPATH);
     this.astar = new AStar(graph);
@@ -321,41 +322,40 @@ public class Client
   private void chooseActionsOfAllAnts(CommData commData)
   {
     Ant tmp = null;
-    Iterator<Ant> it = Client.antManager.getAllMyAnts().iterator();
+    Iterator<Entry<Integer, Ant>> it = Client.antManager.getAllMyAnts().entrySet().iterator();
 
     while (it.hasNext())
     {
-      tmp = it.next();
+      Map.Entry<Integer, Ant> pairs = (Map.Entry<Integer, Ant>)it.next();
+      
+      if (DEBUG_GENERAL) System.out.println(pairs.getKey() + " = " + pairs.getValue());
+
+      tmp = pairs.getValue();
       AntAction action = chooseAction(commData, tmp);
-      tmp.antData.myAction.copyFrom(action);
+      tmp.getAntData().myAction.copyFrom(action);
       if (Client.DEBUG_GENERAL)
-        System.out.println("Returned action type: " + action.type + ", Ant Action Type " +  tmp.antData.myAction);
+        System.out.println("Returned action type: " + action.type + ", Ant Action Type " + tmp.getAntData().myAction);
+      
+      //TODO
+      it.remove(); // avoids a ConcurrentModificationException
     }
 
-    
-//    Iterator<AntData> it = commData.myAntList.iterator();
-//
-//    while (it.hasNext())
-//    {
-//      it.next().myAction.type = AntActionType.EXIT_NEST;
-//    }
-    
     this.printComparisons(commData, antManager);
   }
 
   private AntAction chooseAction(CommData data, Ant ant)
   {
-    if (Client.DEBUG_GENERAL) System.out.println("Getting the action of ant " + ant.antData.id);
+    if (Client.DEBUG_GENERAL) System.out.println("Getting the action of ant " + ant.getAntData().id);
 
     AntAction action = new AntAction(AntActionType.STASIS);
 
-    if (ant.antData.ticksUntilNextAction > 0)
+    if (ant.getAntData().ticksUntilNextAction > 0)
     {
       if (Client.DEBUG_GENERAL) System.out.println("Ant unable to move, returning STATIS...");
       return action;
     }
 
-    if (ant.antData.underground)
+    if (ant.getAntData().underground)
     {
       action.type = AntActionType.EXIT_NEST;
       action.x = centerX - Constants.NEST_RADIUS + random.nextInt(2 * Constants.NEST_RADIUS);
@@ -364,7 +364,7 @@ public class Client
       return action;
     }
 
-    if (ant.antData.carryUnits > 0) ant.setActivity(ActivityEnum.CARRYING_FOOD);
+    if (ant.getAntData().carryUnits > 0) ant.setActivity(ActivityEnum.CARRYING_FOOD);
 
     // If the ant is at the food, pick it up.
     if (ant.getActivity() == ActivityEnum.APPROACHING_FOOD && ant.isDirectionsEmpty())
@@ -385,7 +385,7 @@ public class Client
 
       FoodData food = data.foodSet.iterator().next();
 
-      Location antPosition = new Location(ant.antData.gridX, ant.antData.gridY);
+      Location antPosition = new Location(ant.getAntData().gridX, ant.getAntData().gridY);
       Location foodPosition = new Location(food.gridX, food.gridY - 1);
 
       this.graph.addNode(antPosition);
@@ -408,9 +408,9 @@ public class Client
     {
       this.graph.clearGraph();
 
-      this.graph.addNode(new Location(ant.antData.gridX, ant.antData.gridY));
+      this.graph.addNode(new Location(ant.getAntData().gridX, ant.getAntData().gridY));
       this.graph.addNode(new Location(this.centerX, this.centerY));
-      this.graph.setStartNode(this.graph.getNode(new Location(ant.antData.gridX, ant.antData.gridY)));
+      this.graph.setStartNode(this.graph.getNode(new Location(ant.getAntData().gridX, ant.getAntData().gridY)));
       this.graph.setGoalNode(this.graph.getNode(new Location(this.centerX, this.centerY)));
       ant.setDirections(astar.getDirections(astar.aStar(this.graph.getStartNode(), this.graph.getGoalNode())));
 
@@ -425,7 +425,7 @@ public class Client
     {
       action.type = AntActionType.DROP;
       action.direction = Direction.NORTH;
-      action.quantity = ant.antData.carryUnits;
+      action.quantity = ant.getAntData().carryUnits;
       if (Client.DEBUG_GENERAL) System.out.println("Ant is home and dropping food on nest...");
       return action;
     }
@@ -442,36 +442,36 @@ public class Client
         switch (Direction.getRandomDir())
         {
           case NORTH:
-            randomDestination.x = ant.antData.gridX;
-            randomDestination.y = ant.antData.gridY - distance;
+            randomDestination.x = ant.getAntData().gridX;
+            randomDestination.y = ant.getAntData().gridY - distance;
             break;
           case NORTHEAST:
-            randomDestination.x = ant.antData.gridX + distance;
-            randomDestination.y = ant.antData.gridY - distance;
+            randomDestination.x = ant.getAntData().gridX + distance;
+            randomDestination.y = ant.getAntData().gridY - distance;
             break;
           case EAST:
-            randomDestination.x = ant.antData.gridX + distance;
-            randomDestination.y = ant.antData.gridY;
+            randomDestination.x = ant.getAntData().gridX + distance;
+            randomDestination.y = ant.getAntData().gridY;
             break;
           case SOUTHEAST:
-            randomDestination.x = ant.antData.gridX + distance;
-            randomDestination.y = ant.antData.gridY + distance;
+            randomDestination.x = ant.getAntData().gridX + distance;
+            randomDestination.y = ant.getAntData().gridY + distance;
             break;
           case SOUTH:
-            randomDestination.x = ant.antData.gridX;
-            randomDestination.y = ant.antData.gridY + distance;
+            randomDestination.x = ant.getAntData().gridX;
+            randomDestination.y = ant.getAntData().gridY + distance;
             break;
           case SOUTHWEST:
-            randomDestination.x = ant.antData.gridX - distance;
-            randomDestination.y = ant.antData.gridY + distance;
+            randomDestination.x = ant.getAntData().gridX - distance;
+            randomDestination.y = ant.getAntData().gridY + distance;
             break;
           case WEST:
-            randomDestination.x = ant.antData.gridX - distance;
-            randomDestination.y = ant.antData.gridY;
+            randomDestination.x = ant.getAntData().gridX - distance;
+            randomDestination.y = ant.getAntData().gridY;
             break;
           case NORTHWEST:
-            randomDestination.x = ant.antData.gridX - distance;
-            randomDestination.y = ant.antData.gridY - distance;
+            randomDestination.x = ant.getAntData().gridX - distance;
+            randomDestination.y = ant.getAntData().gridY - distance;
             break;
           default:
             System.out.println("There a big problem here...");
@@ -481,9 +481,9 @@ public class Client
       while (graph.calcWeight(new Location(randomDestination.x, randomDestination.y)) == 'X');
 
       this.graph.clearGraph();
-      this.graph.addNode(new Location(ant.antData.gridX, ant.antData.gridY));
+      this.graph.addNode(new Location(ant.getAntData().gridX, ant.getAntData().gridY));
       this.graph.addNode(new Location(randomDestination.x, randomDestination.y));
-      this.graph.setStartNode(this.graph.getNode(new Location(ant.antData.gridX, ant.antData.gridY)));
+      this.graph.setStartNode(this.graph.getNode(new Location(ant.getAntData().gridX, ant.getAntData().gridY)));
       this.graph.setGoalNode(this.graph.getNode(new Location(randomDestination.x, randomDestination.y)));
       ant.setDirections(astar.getDirections(astar.aStar(this.graph.getStartNode(), this.graph.getGoalNode())));
 
@@ -500,154 +500,48 @@ public class Client
       if (Client.DEBUG_GENERAL) System.out.println("Ant is moving to the " + action.direction + "...");
       return action;
     }
-
-    // if (ant.directionIsEmpty())
-    // {
-    // System.out.println("Ant is idle, awaiting instructions.");
-    //
-    // if (ant.antData.carryUnits > 0 && ant.antData.gridX == this.centerX &&
-    // ant.antData.gridY == this.centerY)
-    // {
-    // System.out.print("Ant is on the nest and has food, dropping food.");
-    // action.type = AntActionType.DROP;
-    // action.direction = Direction.NORTH;
-    // action.quantity = ant.antData.carryUnits;
-    // }
-    // else if (ant.antData.carryUnits > 40)
-    // {
-    // this.graph.clearGraph();
-    // this.graph.addNode(new Location(ant.antData.gridX, ant.antData.gridY));
-    // this.graph.addNode(new Location(this.centerX, this.centerY));
-    // this.graph.setStartNode(this.graph.getNode(new
-    // Location(ant.antData.gridX, ant.antData.gridY)));
-    // this.graph.setGoalNode(this.graph.getNode(new Location(this.centerX,
-    // this.centerY)));
-    // ant.setPath(astar.getDirections(astar.aStar(this.graph.getStartNode(),
-    // this.graph.getGoalNode())));
-    //
-    // System.out.println("Ant is encumbered, moving home to the nest located at: "
-    // + this.graph.getGoalNode().toString());
-    // }
-    // else if (!data.foodSet.isEmpty())
-    // {
-    // FoodData tmp = null;
-    //
-    // Iterator<FoodData> it = data.foodSet.iterator();
-    // tmp = it.next();
-    //
-    // this.graph.clearGraph();
-    // this.graph.addNode(new Location(ant.antData.gridX, ant.antData.gridY));
-    // this.graph.addNode(new Location(tmp.gridX, tmp.gridY));
-    // this.graph.setStartNode(this.graph.getNode(new
-    // Location(ant.antData.gridX, ant.antData.gridY)));
-    // this.graph.setGoalNode(this.graph.getNode(new Location(tmp.gridX,
-    // tmp.gridY)));
-    // ant.setPath(astar.getDirections(astar.aStar(this.graph.getStartNode(),
-    // this.graph.getGoalNode())));
-    //
-    // System.out.println("Food Spotted, moving to: " +
-    // this.graph.getGoalNode().toString());
-    // }
-    // else
-    // {
-    // System.out.println("Ant is deciding where to move, looking for food.");
-    //
-    // Point tmp = new Point();
-    //
-    // int distance = 100;
-    //
-    // do
-    // {
-    // switch (Direction.getRandomDir())
-    // {
-    // case NORTH:
-    // tmp.x = ant.antData.gridX;
-    // tmp.y = ant.antData.gridY - distance;
-    // break;
-    // case NORTHEAST:
-    // tmp.x = ant.antData.gridX + distance;
-    // tmp.y = ant.antData.gridY - distance;
-    // break;
-    // case EAST:
-    // tmp.x = ant.antData.gridX + distance;
-    // tmp.y = ant.antData.gridY;
-    // break;
-    // case SOUTHEAST:
-    // tmp.x = ant.antData.gridX + distance;
-    // tmp.y = ant.antData.gridY + distance;
-    // break;
-    // case SOUTH:
-    // tmp.x = ant.antData.gridX;
-    // tmp.y = ant.antData.gridY + distance;
-    // break;
-    // case SOUTHWEST:
-    // tmp.x = ant.antData.gridX - distance;
-    // tmp.y = ant.antData.gridY + distance;
-    // break;
-    // case WEST:
-    // tmp.x = ant.antData.gridX - distance;
-    // tmp.y = ant.antData.gridY;
-    // break;
-    // case NORTHWEST:
-    // tmp.x = ant.antData.gridX - distance;
-    // tmp.y = ant.antData.gridY - distance;
-    // break;
-    // default: System.out.println("There a big problem here...");
-    // break;
-    // }
-    // }
-    // while (graph.calcWeight(new Location(tmp.x, tmp.y)) == 'X');
-    //
-    // System.out.println("Ant has decided to move.");
-    //
-    // this.graph.clearGraph();
-    // this.graph.addNode(new Location(ant.antData.gridX, ant.antData.gridY));
-    // this.graph.addNode(new Location(tmp.x, tmp.y));
-    // this.graph.setStartNode(this.graph.getNode(new
-    // Location(ant.antData.gridX, ant.antData.gridY)));
-    // this.graph.setGoalNode(this.graph.getNode(new Location(tmp.x, tmp.y)));
-    // ant.setPath(astar.getDirections(astar.aStar(this.graph.getStartNode(),
-    // this.graph.getGoalNode())));
-    // }
-    // }
-    // else
-    // {
-    // action.type = AntActionType.MOVE;
-    // action.direction = ant.getNextDirection();
-    // }
   }
-  
+
   public void printComparisons(CommData data, AntManager manager)
   {
     AntData tmpComm = null;
     int count = 0;
     Iterator<AntData> commIt = data.myAntList.iterator();
-    
+
     System.out.print("CommData Ants:");
-    
+
     while (commIt.hasNext() && count < 5)
     {
       count++;
-      tmpComm = commIt.next();    
-      System.out.print(" ID: " + tmpComm.id + " Location: (" + tmpComm.gridX + ", " + tmpComm.gridY + ") Type: " + tmpComm.antType + " Health: " + tmpComm.health + " Action: " + tmpComm.myAction);
+      tmpComm = commIt.next();
+      System.out.print(" ID: " + tmpComm.id + " Location: (" + tmpComm.gridX + ", " + tmpComm.gridY + ") Type: "
+          + tmpComm.antType + " Health: " + tmpComm.health + " Action: " + tmpComm.myAction);
     }
-    
+
     System.out.println("\n\n");
-    
+
     count = 0;
-    
+
     Ant tmpManager = null;
-    Iterator<Ant> managerIt =manager.getAllMyAnts().iterator();
+    Iterator<Entry<Integer, Ant>> managerIt = manager.getAllMyAnts().entrySet().iterator();
 
     System.out.print("AntManager Ants:");
-    
+
     while (managerIt.hasNext() && count < 5)
     {
+      Map.Entry<Integer, Ant> pairs = (Map.Entry<Integer, Ant>) managerIt.next();
+      System.out.println(pairs.getKey() + " = " + pairs.getValue());
+      
       count++;
-      tmpManager = managerIt.next();    
-      System.out.print(" ID: " + tmpManager.antData.id + " Location: (" + tmpManager.antData.gridX + ", " + tmpManager.antData.gridY + ") Type: " + tmpManager.antData.antType + " Health: " + tmpManager.antData.health + " Action: " + tmpManager.antData.myAction);
+      tmpManager = pairs.getValue();
+      System.out.print(" ID: " + tmpManager.getAntData().id + " Location: (" + tmpManager.getAntData().gridX + ", "
+          + tmpManager.getAntData().gridY + ") Type: " + tmpManager.getAntData().antType + " Health: "
+          + tmpManager.getAntData().health + " Action: " + tmpManager.getAntData().myAction);
+      
+      //TODO
+      managerIt.remove();
     }
-    
+
     System.out.println();
   }
 
@@ -726,41 +620,41 @@ public class Client
   }
 
   // TODO This is for debugging purposes only.
-  public static void initializeActions(WorldGUI gui)
-  {
-    Random rand = new Random();
-
-    while (true)
-    {
-      try
-      {
-        Thread.sleep(1000);
-      }
-      catch (InterruptedException e1)
-      {
-      }
-
-      Ant tmp = null;
-      Iterator<Ant> it = Client.antManager.getAllMyAnts().iterator();
-
-      while (it.hasNext())
-      {
-        tmp = it.next();
-
-        tmp.antData.gridX = tmp.antData.gridX + rand.nextInt(3) - 1;
-        tmp.antData.gridY = tmp.antData.gridY + rand.nextInt(3) - 1;
-        tmp.updateModel();
-      }
-
-      Platform.runLater(new Runnable()
-      {
-        public void run()
-        {
-          gui.updateGUI();
-        }
-      });
-    }
-  }
+//  public static void initializeActions(WorldGUI gui)
+//  {
+//    Random rand = new Random();
+//
+//    while (true)
+//    {
+//      try
+//      {
+//        Thread.sleep(1000);
+//      }
+//      catch (InterruptedException e1)
+//      {
+//      }
+//
+//      Ant tmp = null;
+//      Iterator<Ant> it = Client.antManager.getAllMyAnts().iterator();
+//
+//      while (it.hasNext())
+//      {
+//        tmp = it.next();
+//
+//        tmp.antData.gridX = tmp.antData.gridX + rand.nextInt(3) - 1;
+//        tmp.antData.gridY = tmp.antData.gridY + rand.nextInt(3) - 1;
+//        tmp.updateModel();
+//      }
+//
+//      Platform.runLater(new Runnable()
+//      {
+//        public void run()
+//        {
+//          gui.updateGUI();
+//        }
+//      });
+//    }
+//  }
 
   public static AntManager getActiveAntManager()
   {

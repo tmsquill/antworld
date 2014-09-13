@@ -9,7 +9,7 @@ import antworld.data.Direction;
 
 public class Ant
 {
-	public AntData antData;
+	private AntData antData;
 	private int antID;
 	private ActivityEnum activity = ActivityEnum.SEARCHING_FOR_FOOD;
   public LinkedList<Direction> directions = new LinkedList<Direction>();  
@@ -53,6 +53,15 @@ public class Ant
   }
   
   
+  public void setAntData(AntData data)
+  {
+    this.antData = data;
+  }
+  
+  public AntData getAntData()
+  {
+    return this.antData;
+  }
   
   public void setActivity(ActivityEnum activity)
   {
