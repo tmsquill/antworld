@@ -23,8 +23,8 @@ public class Formation
   public void singleFileFive()
   {
     Ant leader = group.getLeader();
-    Ant point;
-    Ant rear;
+    Ant point = group.getFormationPoint();
+    Ant rear = group.getFormationRear();
     Location leaderLoc = new Location(leader.antData.gridX, leader.antData.gridY);
     
   }
