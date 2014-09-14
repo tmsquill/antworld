@@ -11,6 +11,7 @@ public class Ant
 {
   private AntData              antData;
   private int                  antID;
+  private int                  groupID = -1;
   private ActivityEnum         activity   = ActivityEnum.SEARCHING_FOR_FOOD;
   public LinkedList<Direction> directions = new LinkedList<Direction>();
 
@@ -88,6 +89,21 @@ public class Ant
   public int getAntID()
   {
     return this.antID;
+  }
+
+  public int getGroupID()
+  {
+    return this.groupID;
+  }
+
+  public void setGroupID(int groupID)
+  {
+    this.groupID = groupID;
+  }
+  
+  public boolean isInGroup()
+  {
+    return this.groupID > 0 ? true : false;
   }
 
   public String getNest()
