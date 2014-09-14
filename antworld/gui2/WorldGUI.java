@@ -51,6 +51,7 @@ public class WorldGUI extends Application
     stage.setScene(new Scene(layout, 1280, 720));
     stage.show();
 
+    /*
     Timer timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask()
     {
@@ -67,6 +68,7 @@ public class WorldGUI extends Application
         });
       }
     }, 0, 2000);
+    */
   }
 
   public void initializeGUI()

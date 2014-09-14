@@ -20,7 +20,7 @@ import antworld.gui.AntCount;
  */
 public class AntManager
 {
-
+  /** Associates AntData by ID to Ant objects */
   private HashMap<Integer, Ant> allMyAnts   = new HashMap<Integer, Ant>();
 
   /** The counts for each type of ant. */
@@ -91,6 +91,7 @@ public class AntManager
           continue;
         }
         tmp.setAntData(ant);
+        tmp.updateModel();
       }
       else
       {

@@ -61,7 +61,7 @@ public class Client
   private static AntManager         antManager;
   private static FoodManager        foodManager;
 
-  // TODO private WorldGUI gui;
+  private WorldGUI gui;
 
   public Client(String host, int portNumber)
   {
@@ -196,19 +196,19 @@ public class Client
   {
     Client.antManager = new AntManager(data);
     Client.foodManager = new FoodManager(data);
-    AntLive live = new AntLive();
+//    AntLive live = new AntLive();
+//
+//    JFrame frame = new JFrame("Live Ant Statistics");
+//    frame.add(live);
+//    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+//    frame.pack();
+//    frame.setLocationRelativeTo(null);
+//    frame.setVisible(true);
+//
+//    live.update();
 
-    JFrame frame = new JFrame("Live Ant Statistics");
-    frame.add(live);
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    frame.setVisible(true);
-
-    live.update();
-
-    // if (Client.DEBUG_GENERAL) System.out.println("Starting GUI");
-    // javafx.application.Application.launch(WorldGUI.class);
+    if (Client.DEBUG_GENERAL) System.out.println("Starting GUI");
+    javafx.application.Application.launch(WorldGUI.class);
 
     this.graph = new Graph(antworld.constants.Constants.WORLD_MAP_FILEPATH);
     this.astar = new AStar(graph);
@@ -336,8 +336,7 @@ public class Client
       if (Client.DEBUG_GENERAL)
         System.out.println("Returned action type: " + action.type + ", Ant Action Type " + tmp.getAntData().myAction);
 
-      // TODO
-      it.remove(); // avoids a ConcurrentModificationException
+      it.remove();
     }
 
     this.printComparisons(commData, antManager);
@@ -538,7 +537,6 @@ public class Client
           + tmpManager.getAntData().gridY + ") Type: " + tmpManager.getAntData().antType + " Health: "
           + tmpManager.getAntData().health + " Action: " + tmpManager.getAntData().myAction);
 
-      // TODO
       managerIt.remove();
     }
 
