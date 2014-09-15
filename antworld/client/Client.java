@@ -31,6 +31,7 @@ import antworld.data.FoodType;
 import antworld.data.NestNameEnum;
 import antworld.data.TeamNameEnum;
 import antworld.data.AntAction.AntActionType;
+import antworld.food.Food;
 import antworld.gui.AntLive;
 import antworld.gui2.WorldGUI;
 import antworld.info.AntManager;
@@ -218,6 +219,14 @@ public class Client
           System.out.println("=================================================================");
           System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size() + 
               " food packets.");
+          
+          int totalCollectors = 0;
+          for (Food thisFood : foodManager.getAllFood().values())
+          {
+            totalCollectors += thisFood.getCollectors().size(); 
+          }
+          
+          System.out.println("There are " + totalCollectors + " groups of collecting food.");
           System.out.println("=================================================================");
         }
       }

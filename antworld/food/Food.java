@@ -59,6 +59,11 @@ public class Food
     return tmp;
   }
   
+  public List<Ant> getCollectors()
+  {
+    return this.collectors;
+  }
+  
   public boolean isFull()
   {
     return this.collectors.size() >= Food.COLLECTORS ? true : false;

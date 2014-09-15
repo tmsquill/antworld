@@ -21,13 +21,13 @@ import antworld.food.Food;
 
 public class Ant
 {
-  private static final boolean   DEBUG_AI   = true;
+  private static final boolean   DEBUG_AI   = false;
 
   private static Random          random     = Constants.random;
 
   private AntData                antData;
   private int                    antID;
-  private int                    groupID    = -1;
+  private int                    groupID    = -1;   // -1 signifies no group.
 
   private Direction pickupDirection;
   private static AStarDispatcher astar      = new AStarDispatcher();
@@ -71,7 +71,7 @@ public class Ant
 
     if (this.getAntData().ticksUntilNextAction > 0)
     {
-      if (DEBUG_AI) System.out.println("Ant unable to move, returning STATIS...");
+      if (DEBUG_AI) System.out.println("Ant unable to move, returning STASIS...");
       return action;
     }
 
