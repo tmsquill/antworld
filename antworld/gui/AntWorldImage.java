@@ -56,19 +56,14 @@ public class AntWorldImage extends JLabel
     this.colorMap.clear();
   }
 
-  public void paintMyAnts(HashMap<Integer, Ant> myAnts)
+  public void paintMyAnts(HashMap<Integer, Ant> ants)
   {
     this.graphics.setColor(Constants.MY_ANT_COLOR);
-    AntData tmp = null;
-    Iterator<Entry<Integer, Ant>> it = myAnts.entrySet().iterator();
-
-    while (it.hasNext())
+    
+    for (Ant value : ants.values())
     {
-      Map.Entry<Integer, Ant> pairs = it.next();
-      tmp = pairs.getValue().getAntData();
-      this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
-      this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
-      it.remove();
+      this.colorMap.put(new Point(value.getAntData().gridX, value.getAntData().gridY), this.image.getRGB(value.getAntData().gridX, value.getAntData().gridY));
+      this.graphics.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
     }
   }
 

@@ -1,17 +1,14 @@
 package antworld.astar;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import antworld.constants.Constants;
 import antworld.data.Direction;
 
 /**
@@ -25,26 +22,21 @@ public class Graph
    * Map data structure that represents the graph by associating Location keys
    * to Node values.
    */
-  private BufferedImage           image;
-  private HashMap<Location, Node> nodeMap;
+  private static BufferedImage image;
+  private HashMap<Location, Node> nodeMap = new HashMap<Location, Node>();
 
   private Node                    startNode;
   private Node                    goalNode;
-
-  /**
-   * Instantiates a new HashMap object to be used as the map implementation of
-   * the graph.
-   */
-  public Graph(String filename)
+  
+  public static void initializeGraph(String filepath)
   {
-    this.nodeMap = new HashMap<Location, Node>();
     try
     {
-      this.image = ImageIO.read(Graph.class.getResourceAsStream(filename));
+      Graph.image = ImageIO.read(Graph.class.getResourceAsStream(filepath));
     }
     catch (IOException e)
     {
-      // TODO Auto-generated catch block
+      System.out.println("Graph: Error loading map image");
       e.printStackTrace();
     }
   }
@@ -59,7 +51,7 @@ public class Graph
    */
   public void addNode(Location location)
   {
-    this.nodeMap.put(location, new Node(location, this.calcWeight(location)));
+    this.nodeMap.put(location, new Node(location, Graph.calcWeight(location)));
   }
 
   /**
@@ -100,7 +92,7 @@ public class Graph
 
       if (tmpNode == null)
       {
-        tmpWeight = this.calcWeight(tmpLocation);
+        tmpWeight = Graph.calcWeight(tmpLocation);
 
         if (tmpWeight == 'X') continue;
 
@@ -119,11 +111,11 @@ public class Graph
     this.nodeMap.clear();
   }
 
-  public char calcWeight(Location location)
+  public static char calcWeight(Location location)
   {
     if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) { return 'X'; }
 
-    int colorValue = image.getRGB(location.getX(), location.getY());
+    int colorValue = Graph.image.getRGB(location.getX(), location.getY());
     char weight = '0';
 
     switch (colorValue)

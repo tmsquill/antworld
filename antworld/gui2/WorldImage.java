@@ -93,17 +93,11 @@ public class WorldImage extends StackPane
   private void paintMyAnts(HashMap<Integer, Ant> ants)
   {
     this.graphics.setFill(Color.ORANGE);
-    Ant tmp = null;
-    Iterator<Entry<Integer, Ant>> it = ants.entrySet().iterator();
-
-    while (it.hasNext())
+    
+    for (Ant value : ants.values())
     {
-      Map.Entry<Integer, Ant> pairs = (Map.Entry<Integer, Ant>) it.next();
-      tmp = pairs.getValue();
-      this.graphics.fillText(Integer.toString(tmp.getAntData().id), tmp.getAntData().gridX - 5,
-          tmp.getAntData().gridY - 5);
-      this.graphics.fillRect(tmp.getAntData().gridX - 1, tmp.getAntData().gridY - 1, 3, 3);
-      it.remove();
+      this.graphics.fillText(Integer.toString(value.getAntData().id), value.getAntData().gridX - 5, value.getAntData().gridY - 5);
+      this.graphics.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
     }
   }
 
