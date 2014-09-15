@@ -53,7 +53,7 @@ public class AntLive extends JPanel
     this.antControl = new AntControl(Client.getActiveAntManager(), Client.getActiveFoodManager());
 
     // Add the AntImage
-    this.imageScroll.setPreferredSize(new Dimension(700, 500));
+    this.imageScroll.setPreferredSize(new Dimension(1000, 1000));
     this.add(imageScroll, BorderLayout.LINE_START);
 
     // Add the AntTable
@@ -61,7 +61,7 @@ public class AntLive extends JPanel
     this.antTable.setGridColor(Color.BLACK);
     this.antTable.setEnabled(false);
     this.antTable.setPreferredSize(this.antTable.getPreferredScrollableViewportSize());
-    this.antTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+//    this.antTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
     // TODO this.antTable.setDefaultRenderer(Object.class, new
     // AntCellRenderer());
     this.add(tableScroll, BorderLayout.LINE_END);

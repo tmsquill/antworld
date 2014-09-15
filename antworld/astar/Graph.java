@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import antworld.ant.Ant;
+import antworld.client.Client;
 import antworld.data.Direction;
 
 /**
@@ -150,6 +152,15 @@ public class Graph
       default:
         break;
     }
+    
+//    //TODO
+//    for (Ant value : Client.getActiveAntManager().getAllMyAnts().values())
+//    {
+//    	if (location.getX() == value.getAntData().gridX && location.getY() == value.getAntData().gridY)
+//    	{
+//    		weight = 'X';
+//    	}
+//    }
 
     return weight;
   }

@@ -96,7 +96,7 @@ public class WorldImage extends StackPane
     
     for (Ant value : ants.values())
     {
-      this.graphics.fillText(Integer.toString(value.getAntData().id), value.getAntData().gridX - 5, value.getAntData().gridY - 5);
+      //this.graphics.fillText(Integer.toString(value.getAntData().id), value.getAntData().gridX - 5, value.getAntData().gridY - 5);
       this.graphics.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
     }
   }
@@ -110,7 +110,7 @@ public class WorldImage extends StackPane
     while (myAntsIterator.hasNext())
     {
       tmp = myAntsIterator.next();
-      this.graphics.fillText(Integer.toString(tmp.health), tmp.gridX - 5, tmp.gridY - 5);
+      //this.graphics.fillText(Integer.toString(tmp.health), tmp.gridX - 5, tmp.gridY - 5);
       this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
   }

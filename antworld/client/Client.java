@@ -11,6 +11,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 import antworld.ant.Ant;
 import antworld.astar.AStarDispatcher;
 import antworld.astar.Graph;
@@ -27,13 +31,14 @@ import antworld.data.FoodType;
 import antworld.data.NestNameEnum;
 import antworld.data.TeamNameEnum;
 import antworld.data.AntAction.AntActionType;
+import antworld.gui.AntLive;
 import antworld.gui2.WorldGUI;
 import antworld.info.AntManager;
 import antworld.info.FoodManager;
 
 public class Client
 {
-  private static final boolean      DEBUG_CLIENT  = true;
+  private static final boolean      DEBUG_CLIENT  = false;
   private static final boolean      DEBUG_GENERAL = true;
 
   private static final TeamNameEnum myTeam        = TeamNameEnum.Toothachegrass;
@@ -45,10 +50,6 @@ public class Client
   public static int                 centerX, centerY;
 
   private Socket                    clientSocket;
-
-  private static Random             random        = Constants.random;
-
-  private static AStarDispatcher    astar         = new AStarDispatcher();
 
   private static AntManager         antManager;
   private static FoodManager        foodManager;
@@ -186,19 +187,20 @@ public class Client
   {
     Client.antManager = new AntManager(data);
     Client.foodManager = new FoodManager(data);
-    // AntLive live = new AntLive();
-    //
-    // JFrame frame = new JFrame("Live Ant Statistics");
-    // frame.add(live);
-    // frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-    // frame.pack();
-    // frame.setLocationRelativeTo(null);
-    // frame.setVisible(true);
-    //
-    // live.update();
+    AntLive live = new AntLive();
 
-    if (Client.DEBUG_GENERAL) System.out.println("Starting GUI");
-    javafx.application.Application.launch(WorldGUI.class);
+    JFrame frame = new JFrame("Live Ant Statistics");
+    frame.add(live);
+    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    frame.pack();
+    frame.setLocationRelativeTo(null);
+    frame.setVisible(true);
+
+    live.update();
+
+    if (Client.DEBUG_GENERAL) System.out.println("Starting GUI...");
+
+    // javafx.application.Application.launch(WorldGUI.class);
 
     // TODO This is used only for debugging purposes.
     int i = 0;
@@ -211,16 +213,12 @@ public class Client
 
       if (i % 20 == 0)
       {
-        if (Client.DEBUG_GENERAL) System.out.println("Food Packets in LOS: " + data.foodSet.size());
-
-        FoodData tmp = null;
-        Iterator<FoodData> it = data.foodSet.iterator();
-
-        while (it.hasNext())
+        if (Client.DEBUG_GENERAL)
         {
-          tmp = it.next();
-
-          System.out.println("(" + tmp.gridX + ", " + tmp.gridY + ")");
+          System.out.println("=================================================================");
+          System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size() + 
+              " food packets.");
+          System.out.println("=================================================================");
         }
       }
       /**********************************************/
@@ -245,6 +243,7 @@ public class Client
         data = recivedData;
 
         Client.antManager.updateAllAnts(data);
+        Client.foodManager.updateAllFood(data);
 
         if ((myNestName == null) || (data.myTeam != myTeam))
         {
@@ -310,164 +309,8 @@ public class Client
   {
     for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
     {
-      AntAction action = thisAnt.chooseAction(commData, thisAnt);
+      AntAction action = thisAnt.chooseAction(commData);
       thisAnt.getAntData().myAction.copyFrom(action);
-      if (Client.DEBUG_GENERAL)
-        System.out.println("Returned Action Type: " + action.type + ", Ant Action Type " + thisAnt.getAntData().myAction);
-    }
-    
-    
-//    for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
-//    {
-//      AntAction action = chooseAction(commData, thisAnt);
-//      thisAnt.getAntData().myAction.copyFrom(action);
-//      if (Client.DEBUG_GENERAL)
-//        System.out.println("Returned Action Type: " + action.type + ", Ant Action Type " + thisAnt.getAntData().myAction);
-//    }
-
-    this.printComparisons(commData, antManager);
-  }
-
-  private AntAction chooseAction(CommData data, Ant ant)
-  {
-    if (Client.DEBUG_GENERAL) System.out.println("Getting the action of ant " + ant.getAntData().id);
-
-    AntAction action = new AntAction(AntActionType.STASIS);
-
-    if (ant.getAntData().ticksUntilNextAction > 0)
-    {
-      if (Client.DEBUG_GENERAL) System.out.println("Ant unable to move, returning STATIS...");
-      return action;
-    }
-
-    if (ant.getAntData().underground)
-    {
-      action.type = AntActionType.EXIT_NEST;
-      action.x = centerX - Constants.NEST_RADIUS + random.nextInt(2 * Constants.NEST_RADIUS);
-      action.y = centerY - Constants.NEST_RADIUS + random.nextInt(2 * Constants.NEST_RADIUS);
-      if (Client.DEBUG_GENERAL) System.out.println("Ant is underground, bringing it above ground...");
-      return action;
-    }
-
-    if (ant.getAntData().carryUnits > 0) ant.setActivity(ActivityEnum.CARRYING_FOOD);
-
-    // If the ant is at the food, pick it up.
-    if (ant.getActivity() == ActivityEnum.APPROACHING_FOOD && ant.isDirectionsEmpty())
-    {
-      action.type = AntActionType.PICKUP;
-      action.direction = Direction.NORTH;
-      action.quantity = 24;
-      if (Client.DEBUG_GENERAL) System.out.println("Ant is at food, trying to pick it up...");
-      return action;
-    }
-
-    // If food is around and the ant is not working on getting it, have them get
-    // it.
-    else if (!data.foodSet.isEmpty() && ant.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD)
-    {
-      ant.directions.clear();
-
-      FoodData food = data.foodSet.iterator().next();
-
-      Location antPosition = new Location(ant.getAntData().gridX, ant.getAntData().gridY);
-      Location foodPosition = new Location(food.gridX, food.gridY - 1);
-
-      ant.setDirections(Client.astar.dispatchAStar(antPosition, foodPosition));
-      ant.setActivity(ActivityEnum.APPROACHING_FOOD);
-
-      action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
-      if (Client.DEBUG_GENERAL) System.out.println("Ant found food, setting course for it...");
-      return action;
-    }
-
-    // If the ant is carrying food, head home.
-    else if (ant.getActivity() == ActivityEnum.CARRYING_FOOD && ant.isDirectionsEmpty())
-    {
-      ant.setDirections(this.astar.dispatchAStar(new Location(ant.getAntData().gridX, ant.getAntData().gridY),
-          (new Location(this.centerX, this.centerY))));
-
-      action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
-      if (Client.DEBUG_GENERAL) System.out.println("Ant just picked up food and is heading home...");
-      return action;
-    }
-
-    // If the ant is carrying food and on the nest then drop the food.
-    else if (ant.getActivity() == ActivityEnum.CARRYING_FOOD && ant.isDirectionsEmpty())
-    {
-      action.type = AntActionType.DROP;
-      action.direction = Direction.NORTH;
-      action.quantity = ant.getAntData().carryUnits;
-      if (Client.DEBUG_GENERAL) System.out.println("Ant is home and dropping food on nest...");
-      return action;
-    }
-
-    // If the ant is not carrying or has found food, look for food.
-    else if (ant.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD && ant.isDirectionsEmpty())
-    {
-      Point randomDestination = new Point();
-
-      int distance = 100;
-
-      do
-      {
-        switch (Direction.getRandomDir())
-        {
-          case NORTH:
-            randomDestination.x = ant.getAntData().gridX;
-            randomDestination.y = ant.getAntData().gridY - distance;
-            break;
-          case NORTHEAST:
-            randomDestination.x = ant.getAntData().gridX + distance;
-            randomDestination.y = ant.getAntData().gridY - distance;
-            break;
-          case EAST:
-            randomDestination.x = ant.getAntData().gridX + distance;
-            randomDestination.y = ant.getAntData().gridY;
-            break;
-          case SOUTHEAST:
-            randomDestination.x = ant.getAntData().gridX + distance;
-            randomDestination.y = ant.getAntData().gridY + distance;
-            break;
-          case SOUTH:
-            randomDestination.x = ant.getAntData().gridX;
-            randomDestination.y = ant.getAntData().gridY + distance;
-            break;
-          case SOUTHWEST:
-            randomDestination.x = ant.getAntData().gridX - distance;
-            randomDestination.y = ant.getAntData().gridY + distance;
-            break;
-          case WEST:
-            randomDestination.x = ant.getAntData().gridX - distance;
-            randomDestination.y = ant.getAntData().gridY;
-            break;
-          case NORTHWEST:
-            randomDestination.x = ant.getAntData().gridX - distance;
-            randomDestination.y = ant.getAntData().gridY - distance;
-            break;
-          default:
-            System.out.println("There a big problem here...");
-            break;
-        }
-      }
-      while (Graph.calcWeight(new Location(randomDestination.x, randomDestination.y)) == 'X');
-
-      ant.setDirections(astar.dispatchAStar(new Location(ant.getAntData().gridX, ant.getAntData().gridY), new Location(
-          randomDestination.x, randomDestination.y)));
-
-      action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
-      if (Client.DEBUG_GENERAL) System.out.println("Ant is looking for food via random walk...");
-      return action;
-    }
-
-    else
-    {
-      action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
-      if (Client.DEBUG_GENERAL) System.out.println("Ant is moving to the " + action.direction + "...");
-      return action;
     }
   }
 
@@ -628,6 +471,6 @@ public class Client
 
   public static void main(String[] args)
   {
-    new Client(args[0], Constants.PORT);
+    new Client("phoebe.cs.unm.edu", Constants.PORT);
   }
 }

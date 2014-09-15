@@ -18,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
 import antworld.ant.Ant;
+import antworld.constants.ActivityEnum;
 import antworld.constants.Constants;
 import antworld.data.AntData;
 import antworld.data.FoodData;
@@ -57,11 +58,12 @@ public class AntWorldImage extends JLabel
   }
 
   public void paintMyAnts(HashMap<Integer, Ant> ants)
-  {
-    this.graphics.setColor(Constants.MY_ANT_COLOR);
-    
+  {    
     for (Ant value : ants.values())
     {
+      if (value.getActivity() == ActivityEnum.APPROACHING_FOOD) this.graphics.setColor(new Color(0x00CCFF));
+      else if (value.getActivity() == ActivityEnum.CARRYING_FOOD) this.graphics.setColor(new Color(0xFF0000));
+      else this.graphics.setColor(Constants.MY_ANT_COLOR);
       this.colorMap.put(new Point(value.getAntData().gridX, value.getAntData().gridY), this.image.getRGB(value.getAntData().gridX, value.getAntData().gridY));
       this.graphics.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
     }

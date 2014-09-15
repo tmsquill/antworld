@@ -17,6 +17,7 @@ import antworld.data.Constants;
 import antworld.data.Direction;
 import antworld.data.FoodData;
 import antworld.data.AntAction.AntActionType;
+import antworld.food.Food;
 
 public class Ant
 {
@@ -28,7 +29,7 @@ public class Ant
   private int                    antID;
   private int                    groupID    = -1;
 
-  // AI Stuff
+  private Direction pickupDirection;
   private static AStarDispatcher astar      = new AStarDispatcher();
   AntAction                      action     = new AntAction(AntActionType.STASIS);
 
@@ -53,7 +54,7 @@ public class Ant
     this.updateModel();
   }
 
-  public AntAction chooseAction(CommData data, Ant ant)
+  public AntAction chooseAction(CommData data)
   {
     // If ant is in Group, then ignore this.
     // Check if need to retreat.
@@ -64,17 +65,17 @@ public class Ant
     // If PriorityEnum is not IDLE, carry out the priority.
     // If PriorityEnum is IDLE then determine next priority.
 
-    if (DEBUG_AI) System.out.println("Getting the action of ant " + ant.getAntData().id);
+    if (DEBUG_AI) System.out.println("Getting the action of ant " + this.getAntData().id);
 
     AntAction action = new AntAction(AntActionType.STASIS);
 
-    if (ant.getAntData().ticksUntilNextAction > 0)
+    if (this.getAntData().ticksUntilNextAction > 0)
     {
       if (DEBUG_AI) System.out.println("Ant unable to move, returning STATIS...");
       return action;
     }
 
-    if (ant.getAntData().underground)
+    if (this.getAntData().underground)
     {
       action.type = AntActionType.EXIT_NEST;
       action.x = Client.centerX - Constants.NEST_RADIUS + random.nextInt(2 * Constants.NEST_RADIUS);
@@ -83,13 +84,13 @@ public class Ant
       return action;
     }
 
-    if (ant.getAntData().carryUnits > 0) ant.setActivity(ActivityEnum.CARRYING_FOOD);
+    if (this.getAntData().carryUnits > 0) this.setActivity(ActivityEnum.CARRYING_FOOD);
 
     // If the ant is at the food, pick it up.
-    if (ant.getActivity() == ActivityEnum.APPROACHING_FOOD && ant.isDirectionsEmpty())
+    if (this.getActivity() == ActivityEnum.APPROACHING_FOOD && this.isDirectionsEmpty())
     {
       action.type = AntActionType.PICKUP;
-      action.direction = Direction.NORTH;
+      action.direction = this.pickupDirection;
       action.quantity = 24;
       if (DEBUG_AI) System.out.println("Ant is at food, trying to pick it up...");
       return action;
@@ -97,101 +98,62 @@ public class Ant
 
     // If food is around and the ant is not working on getting it, have them get
     // it.
-    else if (!data.foodSet.isEmpty() && ant.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD)
+    else if (!data.foodSet.isEmpty() && this.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD)
     {
-      ant.directions.clear();
+      //Loop through food objects and see if any of them need more collectors.
+    	//If a food object needs another collector, assign this ant to it.
+      for (Food value : Client.getActiveFoodManager().getAllFood().values())
+      {
+        if (value.isFull()) continue;
+        else
+        {
+          this.directions.clear();
 
-      FoodData food = data.foodSet.iterator().next();
-
-      Location antPosition = new Location(ant.getAntData().gridX, ant.getAntData().gridY);
-      Location foodPosition = new Location(food.gridX, food.gridY - 1);
-
-      ant.setDirections(astar.dispatchAStar(antPosition, foodPosition));
-      ant.setActivity(ActivityEnum.APPROACHING_FOOD);
-
+          this.setDirections(astar.dispatchAStar(new Location(this.antData.gridX, this.antData.gridY), value.addCollector(this)));
+          this.setActivity(ActivityEnum.APPROACHING_FOOD);
+          action.type = AntActionType.MOVE;
+          action.direction = this.getNextDirection();
+          if (DEBUG_AI) System.out.println("Ant found food, setting course for it...");
+          return action;
+        }
+      }
+      
+      if (this.directions.isEmpty()) this.assignRandomDirections();
       action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
-      if (DEBUG_AI) System.out.println("Ant found food, setting course for it...");
+      action.direction = this.getNextDirection();
+      if (DEBUG_AI) System.out.println("Food is seen and the ant is searching, but other ants are gathering...");
       return action;
     }
 
     // If the ant is carrying food, head home.
-    else if (ant.getActivity() == ActivityEnum.CARRYING_FOOD && ant.isDirectionsEmpty())
+    else if (this.getActivity() == ActivityEnum.CARRYING_FOOD && this.isDirectionsEmpty())
     {
-      ant.setDirections(astar.dispatchAStar(new Location(ant.getAntData().gridX, ant.getAntData().gridY),
+      this.setDirections(astar.dispatchAStar(new Location(this.getAntData().gridX, this.getAntData().gridY),
           (new Location(Client.centerX, Client.centerY))));
 
       action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
+      action.direction = this.getNextDirection();
       if (DEBUG_AI) System.out.println("Ant just picked up food and is heading home...");
       return action;
     }
 
     // If the ant is carrying food and on the nest then drop the food.
-    else if (ant.getActivity() == ActivityEnum.CARRYING_FOOD && ant.isDirectionsEmpty())
+    else if (this.getActivity() == ActivityEnum.CARRYING_FOOD && this.isDirectionsEmpty())
     {
       action.type = AntActionType.DROP;
       action.direction = Direction.NORTH;
-      action.quantity = ant.getAntData().carryUnits;
+      action.quantity = this.getAntData().carryUnits;
       if (DEBUG_AI) System.out.println("Ant is home and dropping food on nest...");
       return action;
     }
 
     // If the ant is not carrying or has found food, look for food.
-    else if (ant.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD && ant.isDirectionsEmpty())
+    else if (this.getActivity() == ActivityEnum.SEARCHING_FOR_FOOD && this.isDirectionsEmpty())
     {
-      Point randomDestination = new Point();
-
-      int distance = 100;
-
-      do
-      {
-        switch (Direction.getRandomDir())
-        {
-          case NORTH:
-            randomDestination.x = ant.getAntData().gridX;
-            randomDestination.y = ant.getAntData().gridY - distance;
-            break;
-          case NORTHEAST:
-            randomDestination.x = ant.getAntData().gridX + distance;
-            randomDestination.y = ant.getAntData().gridY - distance;
-            break;
-          case EAST:
-            randomDestination.x = ant.getAntData().gridX + distance;
-            randomDestination.y = ant.getAntData().gridY;
-            break;
-          case SOUTHEAST:
-            randomDestination.x = ant.getAntData().gridX + distance;
-            randomDestination.y = ant.getAntData().gridY + distance;
-            break;
-          case SOUTH:
-            randomDestination.x = ant.getAntData().gridX;
-            randomDestination.y = ant.getAntData().gridY + distance;
-            break;
-          case SOUTHWEST:
-            randomDestination.x = ant.getAntData().gridX - distance;
-            randomDestination.y = ant.getAntData().gridY + distance;
-            break;
-          case WEST:
-            randomDestination.x = ant.getAntData().gridX - distance;
-            randomDestination.y = ant.getAntData().gridY;
-            break;
-          case NORTHWEST:
-            randomDestination.x = ant.getAntData().gridX - distance;
-            randomDestination.y = ant.getAntData().gridY - distance;
-            break;
-          default:
-            System.out.println("There a big problem here...");
-            break;
-        }
-      }
-      while (Graph.calcWeight(new Location(randomDestination.x, randomDestination.y)) == 'X');
-
-      ant.setDirections(astar.dispatchAStar(new Location(ant.getAntData().gridX, ant.getAntData().gridY), new Location(
-          randomDestination.x, randomDestination.y)));
+      this.assignRandomDirections();
 
       action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
+      action.direction = this.getNextDirection();
       if (DEBUG_AI) System.out.println("Ant is looking for food via random walk...");
       return action;
     }
@@ -199,10 +161,63 @@ public class Ant
     else
     {
       action.type = AntActionType.MOVE;
-      action.direction = ant.getNextDirection();
+      action.direction = this.getNextDirection();
       if (DEBUG_AI) System.out.println("Ant is moving to the " + action.direction + "...");
       return action;
     }
+  }
+  
+  public void assignRandomDirections()
+  {
+    Point randomDestination = new Point();
+
+    int distance = 100;
+
+    do
+    {
+      switch (Direction.getRandomDir())
+      {
+        case NORTH:
+          randomDestination.x = this.getAntData().gridX;
+          randomDestination.y = this.getAntData().gridY - distance;
+          break;
+        case NORTHEAST:
+          randomDestination.x = this.getAntData().gridX + distance;
+          randomDestination.y = this.getAntData().gridY - distance;
+          break;
+        case EAST:
+          randomDestination.x = this.getAntData().gridX + distance;
+          randomDestination.y = this.getAntData().gridY;
+          break;
+        case SOUTHEAST:
+          randomDestination.x = this.getAntData().gridX + distance;
+          randomDestination.y = this.getAntData().gridY + distance;
+          break;
+        case SOUTH:
+          randomDestination.x = this.getAntData().gridX;
+          randomDestination.y = this.getAntData().gridY + distance;
+          break;
+        case SOUTHWEST:
+          randomDestination.x = this.getAntData().gridX - distance;
+          randomDestination.y = this.getAntData().gridY + distance;
+          break;
+        case WEST:
+          randomDestination.x = this.getAntData().gridX - distance;
+          randomDestination.y = this.getAntData().gridY;
+          break;
+        case NORTHWEST:
+          randomDestination.x = this.getAntData().gridX - distance;
+          randomDestination.y = this.getAntData().gridY - distance;
+          break;
+        default:
+          System.out.println("There a big problem here...");
+          break;
+      }
+    }
+    while (Graph.calcWeight(new Location(randomDestination.x, randomDestination.y)) == 'X');
+
+    this.setDirections(astar.dispatchAStar(new Location(this.getAntData().gridX, this.getAntData().gridY), new Location(
+        randomDestination.x, randomDestination.y)));
   }
 
   public void retreatToNest()
@@ -304,6 +319,16 @@ public class Ant
   public boolean isDirectionsEmpty()
   {
     return this.directions.isEmpty();
+  }
+  
+  public Direction getPickupDirection()
+  {
+    return this.pickupDirection;
+  }
+  
+  public void setPickupDirection(Direction dir)
+  {
+    this.pickupDirection = dir;
   }
 
   /*************************************************************************/
