@@ -42,13 +42,13 @@ public class Client
   private ObjectOutputStream        outputStream  = null;
   private boolean                   isConnected   = false;
   private NestNameEnum              myNestName    = null;
-  private int                       centerX, centerY;
+  public static int                 centerX, centerY;
 
   private Socket                    clientSocket;
 
   private static Random             random        = Constants.random;
 
-  private AStarDispatcher           astar         = new AStarDispatcher();
+  private static AStarDispatcher    astar         = new AStarDispatcher();
 
   private static AntManager         antManager;
   private static FoodManager        foodManager;
@@ -308,13 +308,22 @@ public class Client
 
   private void chooseActionsOfAllAnts(CommData commData)
   {
-    for (Ant value : Client.antManager.getAllMyAnts().values())
+    for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
     {
-      AntAction action = chooseAction(commData, value);
-      value.getAntData().myAction.copyFrom(action);
+      AntAction action = thisAnt.chooseAction(commData, thisAnt);
+      thisAnt.getAntData().myAction.copyFrom(action);
       if (Client.DEBUG_GENERAL)
-        System.out.println("Returned Action Type: " + action.type + ", Ant Action Type " + value.getAntData().myAction);
+        System.out.println("Returned Action Type: " + action.type + ", Ant Action Type " + thisAnt.getAntData().myAction);
     }
+    
+    
+//    for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
+//    {
+//      AntAction action = chooseAction(commData, thisAnt);
+//      thisAnt.getAntData().myAction.copyFrom(action);
+//      if (Client.DEBUG_GENERAL)
+//        System.out.println("Returned Action Type: " + action.type + ", Ant Action Type " + thisAnt.getAntData().myAction);
+//    }
 
     this.printComparisons(commData, antManager);
   }
@@ -363,7 +372,7 @@ public class Client
       Location antPosition = new Location(ant.getAntData().gridX, ant.getAntData().gridY);
       Location foodPosition = new Location(food.gridX, food.gridY - 1);
 
-      ant.setDirections(this.astar.dispatchAStar(antPosition, foodPosition));
+      ant.setDirections(Client.astar.dispatchAStar(antPosition, foodPosition));
       ant.setActivity(ActivityEnum.APPROACHING_FOOD);
 
       action.type = AntActionType.MOVE;

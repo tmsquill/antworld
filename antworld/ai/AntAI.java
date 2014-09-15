@@ -2,6 +2,7 @@ package antworld.ai;
 
 import java.awt.Point;
 
+import antworld.astar.Location;
 import antworld.data.AntAction;
 
 public abstract class AntAI
@@ -20,9 +21,15 @@ public abstract class AntAI
     return null;
   }
   
-  public abstract void retreatToBase();
+  public void retreatToBase(Location start)
+  {
+    
+  }
 
-  public abstract void retreatToLocation();
+  public void retreatToLocation(Location start, Location end)
+  {
+    
+  }
 
   public abstract boolean isEncumbered();
 
