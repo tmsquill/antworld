@@ -11,17 +11,17 @@ import antworld.constants.GroupTypeEnum;
 
 public class TypeScout extends Group
 {
-  private int                  id;
-  private int                  size;
-  private Ant                  leader;
-  private Ant                  formationPoint;
-  private Ant                  formationRear;
-  private PriorityQueue<Ant>   groupList;
+  private int id;
+  private int size;
+  private Ant leader;
+  private Ant formationPoint;
+  private Ant formationRear;
+  private PriorityQueue<Ant> groupList;
 
-  private Rectangle            shape;
+  private Rectangle shape;
   private static GroupTypeEnum type = GroupTypeEnum.SCOUT;
-  private FormationEnum        formation;
-  private Location             destination;
+  private FormationEnum formation;
+  private Location destination;
 
   public TypeScout(int id, List<Ant> groupList)
   {
@@ -38,13 +38,13 @@ public class TypeScout extends Group
         break;
       case BATTLE:
         // Group should only enter battle if no escape is possible
-        //   Retreat?
-        //     retreat();
-        //   Attack?
-        //     Find Target
-        //     Walk to Target
-        //     Attack Formation
-        //     Attack Target
+        // Retreat?
+        // retreat();
+        // Attack?
+        // Find Target
+        // Walk to Target
+        // Attack Formation
+        // Attack Target
         break;
     }
 

@@ -25,7 +25,7 @@ public class AStarDispatcher
   {
     Graph.initializeGraph(Constants.WORLD_MAP_FILEPATH);
   }
-  
+
   public LinkedList<Direction> dispatchAStar(Location start, Location end)
   {
     try
@@ -37,21 +37,22 @@ public class AStarDispatcher
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-    
+
     return null;
   }
 
   public static void main(String[] args)
   {
     new AStarDispatcher();
-    
+
     ExecutorService executor = Executors.newFixedThreadPool(THREADS);
     List<Future<LinkedList<Direction>>> list = new ArrayList<Future<LinkedList<Direction>>>();
     for (int i = 0; i < 1000; i++)
     {
       Callable<LinkedList<Direction>> worker = new AStar(new Graph(), new Node(new Location(1500 + i, 1000 + i), '0'),
-                                              new Node(new Location(1525 + i, 1025 + i), '0'));
-      System.out.println("Running AStar from (" + (1500 + i) + ", " + (1000 + i) + ") to (" + (1525 + i) + ", " + (1025 + i) + ")");
+          new Node(new Location(1525 + i, 1025 + i), '0'));
+      System.out.println("Running AStar from (" + (1500 + i) + ", " + (1000 + i) + ") to (" + (1525 + i) + ", "
+          + (1025 + i) + ")");
       Future<LinkedList<Direction>> submit = executor.submit(worker);
       list.add(submit);
     }

@@ -8,13 +8,13 @@ package antworld.astar;
 public class Node
 {
   private final Location location;
-  private final char     weight;
+  private final char weight;
 
-  private Node           parent;
+  private Node parent;
 
-  private double         g;
-  private double         h;
-  private double         f;
+  private double g;
+  private double h;
+  private double f;
 
   public Node(Location location, char weight)
   {

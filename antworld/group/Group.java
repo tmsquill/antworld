@@ -13,16 +13,16 @@ import antworld.constants.GroupTypeEnum;
 
 public abstract class Group implements Comparator<Ant>
 {
-  private int                id;
-  private int                size;
-  private Ant                leader;
-  private Ant                formationPoint;
-  private Ant                formationRear;
+  private int id;
+  private int size;
+  private Ant leader;
+  private Ant formationPoint;
+  private Ant formationRear;
   private PriorityQueue<Ant> groupList;
 
-  private GroupTypeEnum      type;
-  private FormationEnum      formation;
-  private Rectangle          shape;
+  private GroupTypeEnum type;
+  private FormationEnum formation;
+  private Rectangle shape;
 
   public Group(int id, GroupTypeEnum type, List<Ant> group)
   {

@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 public class WorldTable extends VBox
 {
   private final ObservableList<Ant> data;
-  private final TableView<Ant>      table;
+  private final TableView<Ant> table;
 
   public WorldTable(List<Ant> ants)
   {

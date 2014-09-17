@@ -11,18 +11,18 @@ import antworld.constants.GroupTypeEnum;
 
 public class TypePatrol extends Group
 {
-  private int                  id;
-  private int                  size;
-  private Ant                  leader;
-  private Ant                  formationPoint;
-  private Ant                  formationRear;
-  private PriorityQueue<Ant>   groupList;
+  private int id;
+  private int size;
+  private Ant leader;
+  private Ant formationPoint;
+  private Ant formationRear;
+  private PriorityQueue<Ant> groupList;
 
-  private Rectangle            shape;
+  private Rectangle shape;
   private static GroupTypeEnum type = GroupTypeEnum.PATROL;
-  private FormationEnum        formation;
-  private Location             destination;
-  private Location             Target;
+  private FormationEnum formation;
+  private Location destination;
+  private Location Target;
 
   public TypePatrol(int id, List<Ant> groupList)
   {

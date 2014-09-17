@@ -37,17 +37,17 @@ public class AntControl extends JTabbedPane
 
   public class AntCommand extends JPanel implements ActionListener
   {
-    private JButton                   returnToNestButton  = this.createJButton("Return To Nest");
-    private JButton                   forceRandomWalkButton = this.createJButton("Force Random Walk");
-    private JButton                   goLocationButton    = this.createJButton("Go to Location");
-    private JButton                   goNestButton        = this.createJButton("Go to Nest");
+    private JButton returnToNestButton = this.createJButton("Return To Nest");
+    private JButton forceRandomWalkButton = this.createJButton("Force Random Walk");
+    private JButton goLocationButton = this.createJButton("Go to Location");
+    private JButton goNestButton = this.createJButton("Go to Nest");
 
-    private JTextField                goLocationX         = new JTextField();
-    private JTextField                goLocationY         = new JTextField();
-    private JComboBox<NestNameEnum>   goNestMenu          = this.createJComboBox(NestNameEnum.values());
+    private JTextField goLocationX = new JTextField();
+    private JTextField goLocationY = new JTextField();
+    private JComboBox<NestNameEnum> goNestMenu = this.createJComboBox(NestNameEnum.values());
 
-    private AntCountTableModel        model;
-    private JTable                    table;
+    private AntCountTableModel model;
+    private JTable table;
 
     public AntCommand(AntManager activeAnts)
     {
@@ -64,7 +64,7 @@ public class AntControl extends JTabbedPane
       c.gridy = 0;
       c.gridwidth = 3;
       this.add(this.returnToNestButton, c);
-      
+
       c.gridx = 0;
       c.gridy = 1;
       c.gridwidth = 3;
@@ -166,14 +166,14 @@ public class AntControl extends JTabbedPane
 
   public class NestCommand extends JPanel implements ActionListener
   {
-    private JButton             setResourcePriorityButton = this.createJButton("Set Resource Priority");
-    private JButton             setAntPriorityButton      = this.createJButton("Set Ant Priority");
+    private JButton setResourcePriorityButton = this.createJButton("Set Resource Priority");
+    private JButton setAntPriorityButton = this.createJButton("Set Ant Priority");
 
-    private JComboBox<FoodType> setResourcePriorityMenu   = this.createJComboBox(FoodType.values());
-    private JComboBox<AntType>  setAntPriorityMenu        = this.createJComboBox(AntType.values());
+    private JComboBox<FoodType> setResourcePriorityMenu = this.createJComboBox(FoodType.values());
+    private JComboBox<AntType> setAntPriorityMenu = this.createJComboBox(AntType.values());
 
     private FoodCountTableModel model;
-    private JTable              table;
+    private JTable table;
 
     public NestCommand(FoodManager activeFood)
     {

@@ -11,17 +11,17 @@ import antworld.constants.GroupTypeEnum;
 
 public class TypeHealer extends Group
 {
-  private int                  id;
-  private int                  size;
-  private Ant                  leader;
-  private Ant                  formationPoint;
-  private Ant                  formationRear;
-  private PriorityQueue<Ant>   groupList;
+  private int id;
+  private int size;
+  private Ant leader;
+  private Ant formationPoint;
+  private Ant formationRear;
+  private PriorityQueue<Ant> groupList;
 
-  private Rectangle            shape;
+  private Rectangle shape;
   private static GroupTypeEnum type = GroupTypeEnum.HEALER;
-  private FormationEnum        formation;
-  private Location             destination;
+  private FormationEnum formation;
+  private Location destination;
 
   public TypeHealer(int id, List<Ant> groupList)
   {
@@ -38,11 +38,11 @@ public class TypeHealer extends Group
         break;
       case BATTLE: // Healer groups should never enter battle: BATTLE == HEAL
         // Heal?
-        //   Find Target
-        //   Walk to Target
-        //   Heal Target
+        // Find Target
+        // Walk to Target
+        // Heal Target
         // Retreat?
-        //   retreat();
+        // retreat();
         break;
     }
 

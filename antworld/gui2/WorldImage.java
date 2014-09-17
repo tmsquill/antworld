@@ -27,14 +27,13 @@ import antworld.data.FoodType;
 
 public class WorldImage extends StackPane
 {
-  private final Image           image       = new Image(this.getClass().getResourceAsStream(
-                                                Constants.WORLD_MAP_FILEPATH));
-  private final Canvas          canvas      = new Canvas(this.image.getWidth(), this.image.getHeight());
-  private final GraphicsContext graphics    = this.canvas.getGraphicsContext2D();
+  private final Image image = new Image(this.getClass().getResourceAsStream(Constants.WORLD_MAP_FILEPATH));
+  private final Canvas canvas = new Canvas(this.image.getWidth(), this.image.getHeight());
+  private final GraphicsContext graphics = this.canvas.getGraphicsContext2D();
 
-  final double                  SCALE_DELTA = 1.1;
+  final double SCALE_DELTA = 1.1;
 
-  private double                pressedX, pressedY;
+  private double pressedX, pressedY;
 
   public WorldImage()
   {
@@ -93,10 +92,11 @@ public class WorldImage extends StackPane
   private void paintMyAnts(HashMap<Integer, Ant> ants)
   {
     this.graphics.setFill(Color.ORANGE);
-    
+
     for (Ant value : ants.values())
     {
-      //this.graphics.fillText(Integer.toString(value.getAntData().id), value.getAntData().gridX - 5, value.getAntData().gridY - 5);
+      // this.graphics.fillText(Integer.toString(value.getAntData().id),
+      // value.getAntData().gridX - 5, value.getAntData().gridY - 5);
       this.graphics.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
     }
   }
@@ -110,7 +110,8 @@ public class WorldImage extends StackPane
     while (myAntsIterator.hasNext())
     {
       tmp = myAntsIterator.next();
-      //this.graphics.fillText(Integer.toString(tmp.health), tmp.gridX - 5, tmp.gridY - 5);
+      // this.graphics.fillText(Integer.toString(tmp.health), tmp.gridX - 5,
+      // tmp.gridY - 5);
       this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
   }

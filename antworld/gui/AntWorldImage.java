@@ -30,7 +30,7 @@ import antworld.data.FoodData;
 
 public class AntWorldImage extends JPanel
 {
-  private BufferedImage           image;
+  private BufferedImage image;
 
   public AntWorldImage(String filename)
   {
@@ -43,15 +43,15 @@ public class AntWorldImage extends JPanel
       System.out.println("AntWorldImage Error: Unable to read the image file specified by " + filename);
       e.printStackTrace();
     }
-    
+
     this.setPreferredSize(new Dimension(5000, 2500));
   }
-  
+
   @Override
   protected void paintComponent(Graphics g)
   {
     super.paintComponent(g);
-    
+
     this.paintImage(g);
     this.paintMyAnts(g);
     this.paintEnemyAnts(g);
@@ -64,13 +64,15 @@ public class AntWorldImage extends JPanel
   }
 
   public void paintMyAnts(Graphics g)
-  {    
+  {
     for (Ant value : Client.getActiveAntManager().getAllMyAnts().values())
     {
       if (value.isInjured()) g.setColor(Color.BLACK);
       else if (value.getActivity() == ActivityEnum.APPROACHING_FOOD) g.setColor(new Color(0x00CCFF));
-      else if (value.getAntData().carryUnits > 0 && value.getGathering() == GatheringEnum.FOOD) g.setColor(new Color(0x00FF00));
-      else if (value.getAntData().carryUnits > 0 && value.getGathering() == GatheringEnum.WATER) g.setColor(new Color(0xFF0000));
+      else if (value.getAntData().carryUnits > 0 && value.getGathering() == GatheringEnum.FOOD) g.setColor(new Color(
+          0x00FF00));
+      else if (value.getAntData().carryUnits > 0 && value.getGathering() == GatheringEnum.WATER) g.setColor(new Color(
+          0xFF0000));
       else if (value.getGathering() == GatheringEnum.FOOD) g.setColor(Constants.MY_FOOD_ANT_COLOR);
       else if (value.getGathering() == GatheringEnum.WATER) g.setColor(Constants.MY_WATER_ANT_COLOR);
       else g.setColor(new Color(0xFFFFFF));

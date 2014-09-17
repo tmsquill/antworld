@@ -13,22 +13,22 @@ public class Food
   private static final int COLLECTORS = 4;
   private FoodData foodData;
   private List<Ant> collectors = new ArrayList<Ant>();
-  
+
   public Food(FoodData foodData)
   {
     this.foodData = foodData;
   }
-  
+
   public void setFoodData(FoodData foodData)
   {
     this.foodData = foodData;
   }
-  
+
   public FoodData getFoodData()
   {
     return this.foodData;
   }
-  
+
   public Location addCollector(Ant ant)
   {
     Location tmp = null;
@@ -36,33 +36,35 @@ public class Food
     {
       case 0:
         tmp = new Location(this.foodData.gridX - 1, this.foodData.gridY);
-        ant.setPickupDirection(Direction.EAST); 
-      break;
-      case 1: 
+        ant.setPickupDirection(Direction.EAST);
+        break;
+      case 1:
         tmp = new Location(this.foodData.gridX + 1, this.foodData.gridY);
-        ant.setPickupDirection(Direction.WEST); 
-      break;
-      case 2: 
+        ant.setPickupDirection(Direction.WEST);
+        break;
+      case 2:
         tmp = new Location(this.foodData.gridX, this.foodData.gridY + 1);
-        ant.setPickupDirection(Direction.NORTH); 
-      break;
-      case 3: 
+        ant.setPickupDirection(Direction.NORTH);
+        break;
+      case 3:
         tmp = new Location(this.foodData.gridX, this.foodData.gridY - 1);
-        ant.setPickupDirection(Direction.SOUTH); 
-      break;
-      default: System.out.println("Food: Error more than three ants as collectors");
-      break;
+        ant.setPickupDirection(Direction.SOUTH);
+        break;
+      default:
+        System.out.println("Food: Error more than three ants as collectors");
+        break;
     }
     this.collectors.add(ant);
-    System.out.println("Assigning ant " + ant.getAntData().id + " to get food at (" + this.foodData.gridX + ", " + this.foodData.gridY + ").");
+    System.out.println("Assigning ant " + ant.getAntData().id + " to get food at (" + this.foodData.gridX + ", "
+        + this.foodData.gridY + ").");
     return tmp;
   }
-  
+
   public List<Ant> getCollectors()
   {
     return this.collectors;
   }
-  
+
   public boolean isFull()
   {
     return this.collectors.size() >= Food.COLLECTORS ? true : false;

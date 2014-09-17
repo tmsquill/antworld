@@ -21,34 +21,34 @@ import antworld.gui.AntCount;
 public class AntManager
 {
   /** Associates AntData by ID to Ant objects */
-  private HashMap<Integer, Ant> allMyAnts   = new HashMap<Integer, Ant>();
+  private HashMap<Integer, Ant> allMyAnts = new HashMap<Integer, Ant>();
 
   /** The counts for each type of ant. */
-  private List<AntCount>        antCount    = new ArrayList<AntCount>();
+  private List<AntCount> antCount = new ArrayList<AntCount>();
 
   /** The list of all ants controlled by enemies. */
-  private HashSet<AntData>      allEnemyAnts;
+  private HashSet<AntData> allEnemyAnts;
 
   /** The list of attack ants. */
-  private List<Ant>             attackAnts  = new ArrayList<Ant>();
+  private List<Ant> attackAnts = new ArrayList<Ant>();
 
   /** The list of basic ants. */
-  private List<Ant>             basicAnts   = new ArrayList<Ant>();
+  private List<Ant> basicAnts = new ArrayList<Ant>();
 
   /** The list of carry ants. */
-  private List<Ant>             carryAnts   = new ArrayList<Ant>();
+  private List<Ant> carryAnts = new ArrayList<Ant>();
 
   /** The list of defense ants. */
-  private List<Ant>             defenseAnts = new ArrayList<Ant>();
+  private List<Ant> defenseAnts = new ArrayList<Ant>();
 
   /** The list of medic ants. */
-  private List<Ant>             medicAnts   = new ArrayList<Ant>();
+  private List<Ant> medicAnts = new ArrayList<Ant>();
 
   /** The list of speed ants. */
-  private List<Ant>             speedAnts   = new ArrayList<Ant>();
+  private List<Ant> speedAnts = new ArrayList<Ant>();
 
   /** The list of vision ants. */
-  private List<Ant>             visionAnts  = new ArrayList<Ant>();
+  private List<Ant> visionAnts = new ArrayList<Ant>();
 
   /**
    * Creates a new AntManager object and populates all ant lists and counts.
@@ -67,16 +67,16 @@ public class AntManager
       tmp = it.next();
       this.allMyAnts.put(new Integer(tmp.id), new Ant(tmp));
     }
-    
+
     int waterAnts = 9;
     Ant tmpAnt = null;
     Iterator<Ant> antIt = this.allMyAnts.values().iterator();
-    
+
     while (antIt.hasNext())
     {
       tmpAnt = antIt.next();
       tmpAnt.setGathering(GatheringEnum.WATER);
-      if (waterAnts <= 0) break; 
+      if (waterAnts <= 0) break;
       waterAnts--;
     }
 
@@ -144,17 +144,17 @@ public class AntManager
     this.speedAnts.clear();
     this.visionAnts.clear();
   }
-  
+
   public int getWaterAnts()
   {
     int count = 0;
     Iterator<Ant> it = this.allMyAnts.values().iterator();
-    
+
     while (it.hasNext())
     {
       if (it.next().getGathering() == GatheringEnum.WATER) count++;
     }
-    
+
     return count;
   }
 

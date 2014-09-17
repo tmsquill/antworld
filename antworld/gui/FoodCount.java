@@ -5,7 +5,7 @@ import antworld.data.FoodType;
 public class FoodCount
 {
   private FoodType type;
-  private int      count;
+  private int count;
 
   public FoodCount(FoodType type, int count)
   {

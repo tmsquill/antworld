@@ -14,14 +14,14 @@ import javafx.scene.layout.HBox;
 
 public class AntCommand extends HBox
 {
-  Button    buttonRetreat    = createButton("Retreat To Nest");
-  Button    buttonGoLocation = createButton("Go To Location");
-  Button    buttonGoNest     = createButton("Go To Nest");
+  Button buttonRetreat = createButton("Retreat To Nest");
+  Button buttonGoLocation = createButton("Go To Location");
+  Button buttonGoNest = createButton("Go To Nest");
 
-  TextField textGoX          = new TextField();
-  TextField textGoY          = new TextField();
+  TextField textGoX = new TextField();
+  TextField textGoY = new TextField();
 
-  ComboBox  comboGoNest      = createComboBox(NestNameEnum.values());
+  ComboBox comboGoNest = createComboBox(NestNameEnum.values());
 
   public AntCommand()
   {

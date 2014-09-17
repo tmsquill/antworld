@@ -17,17 +17,17 @@ import antworld.gui.FoodCount;
 
 public class FoodManager
 {
-  private ArrayList<FoodCount>    foodCount = new ArrayList<FoodCount>();
-  private HashMap<Location, Food> allFood   = new HashMap<Location, Food>();
-  private HashSet<FoodData>       worldFood;
+  private ArrayList<FoodCount> foodCount = new ArrayList<FoodCount>();
+  private HashMap<Location, Food> allFood = new HashMap<Location, Food>();
+  private HashSet<FoodData> worldFood;
 
-  private int                     attackFood;
-  private int                     basicFood;
-  private int                     carryFood;
-  private int                     defenseFood;
-  private int                     medicFood;
-  private int                     speedFood;
-  private int                     visionFood;
+  private int attackFood;
+  private int basicFood;
+  private int carryFood;
+  private int defenseFood;
+  private int medicFood;
+  private int speedFood;
+  private int visionFood;
 
   public FoodManager(CommData data)
   {
@@ -50,24 +50,25 @@ public class FoodManager
   {
     Food tmp = null;
 
-    //TODO fix the memory leak.
+    // TODO fix the memory leak.
     for (FoodData food : data.foodSet)
     {
       tmp = this.allFood.get(new Location(food.gridX, food.gridY));
 
       if (tmp != null)
       {
-        tmp.setFoodData(food);;
+        tmp.setFoodData(food);
+        ;
       }
       else
       {
         this.allFood.put(new Location(food.gridX, food.gridY), new Food(food));
       }
     }
-    
+
     Food tmpFood = null;
     Iterator<Food> managerIt = this.allFood.values().iterator();
-    
+
     while (managerIt.hasNext())
     {
       tmpFood = managerIt.next();
@@ -75,7 +76,8 @@ public class FoodManager
       {
         for (Ant ant : tmpFood.getCollectors())
         {
-          if (ant.getActivity() != ActivityEnum.CARRYING_RESOURCE) ant.setActivity(ActivityEnum.SEARCHING_FOR_RESOURCE);
+          if (ant.getActivity() != ActivityEnum.CARRYING_RESOURCE)
+            ant.setActivity(ActivityEnum.SEARCHING_FOR_RESOURCE);
         }
         managerIt.remove();
       }
@@ -91,7 +93,7 @@ public class FoodManager
   {
     return this.worldFood;
   }
-  
+
   public HashMap<Location, Food> getAllFood()
   {
     return this.allFood;

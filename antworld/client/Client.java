@@ -30,25 +30,23 @@ import antworld.info.FoodManager;
 
 public class Client
 {
-  private static final boolean      DEBUG_CLIENT  = false;
-  private static final boolean      DEBUG_GENERAL = true;
+  private static final boolean DEBUG_CLIENT = false;
+  private static final boolean DEBUG_GENERAL = true;
 
-  private static final TeamNameEnum myTeam        = TeamNameEnum.Toothachegrass;
-  private static final long        password      = 1039840868147L;
-  private ObjectInputStream         inputStream   = null;
-  private ObjectOutputStream        outputStream  = null;
-  private boolean                   isConnected   = false;
-  private NestNameEnum              myNestName    = null;
-  public static int                 centerX, centerY;
+  private static final TeamNameEnum myTeam = TeamNameEnum.Toothachegrass;
+  private static final long password = 1039840868147L;
+  private ObjectInputStream inputStream = null;
+  private ObjectOutputStream outputStream = null;
+  private boolean isConnected = false;
+  private NestNameEnum myNestName = null;
+  public static int centerX, centerY;
   public static Rectangle nestArea;
 
-  private Socket                    clientSocket;
+  private Socket clientSocket;
 
-  private static AntManager         antManager;
-  private static FoodManager        foodManager;
+  private static AntManager antManager;
+  private static FoodManager foodManager;
 
-  
-  
   public Client(String host, int portNumber)
   {
     System.out.println("Starting Client: " + System.currentTimeMillis());
@@ -71,8 +69,6 @@ public class Client
     closeAll();
   }
 
-  
-  
   private boolean openConnection(String host, int portNumber)
   {
     try
@@ -107,8 +103,6 @@ public class Client
     return true;
   }
 
-  
-  
   public void closeAll()
   {
     System.out.println("CLosing I/O streams...");
@@ -128,8 +122,6 @@ public class Client
     System.out.println("All I/O streams closed successfully!");
   }
 
-  
-  
   public CommData chooseNest()
   {
     while (myNestName == null)
@@ -184,34 +176,35 @@ public class Client
     return null;
   }
 
-  
-  
   public void mainGameLoop(CommData data)
   {
-    //Initialize managers
+    // Initialize managers
     Client.antManager = new AntManager(data);
     Client.foodManager = new FoodManager(data);
-    
+
     System.out.println("Ants assigned to collect water: " + Client.antManager.getWaterAnts());
-    
-    //Initialize the nest boundary
-    Client.nestArea = new Rectangle(Client.centerX - (Constants.NEST_RADIUS / 2),
-        Client.centerY - (Constants.NEST_RADIUS / 2), Constants.NEST_RADIUS, Constants.NEST_RADIUS);
-    
-    //Create and show the Swing GUI
+
+    // Initialize the nest boundary
+    Client.nestArea = new Rectangle(Client.centerX - (Constants.NEST_RADIUS / 2), Client.centerY
+        - (Constants.NEST_RADIUS / 2), Constants.NEST_RADIUS, Constants.NEST_RADIUS);
+
+    // Create and show the Swing GUI
     AntLive live = new AntLive();
     JFrame frame = new JFrame("Live Ant Statistics");
-    
-    WindowListener exitListener = new WindowListener() 
+
+    WindowListener exitListener = new WindowListener()
     {
       @Override
-      public void windowOpened(WindowEvent e) {}
+      public void windowOpened(WindowEvent e)
+      {
+      }
 
       @Override
-      public void windowClosing(WindowEvent e) 
+      public void windowClosing(WindowEvent e)
       {
-        int confirm = JOptionPane.showOptionDialog(null, "Close Ant World?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if (confirm == 0) 
+        int confirm = JOptionPane.showOptionDialog(null, "Close Ant World?", "Exit Confirmation",
+            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        if (confirm == 0)
         {
           closeAll();
           System.exit(0);
@@ -219,22 +212,32 @@ public class Client
       }
 
       @Override
-      public void windowClosed(WindowEvent e) {}
+      public void windowClosed(WindowEvent e)
+      {
+      }
 
       @Override
-      public void windowIconified(WindowEvent e) {}
+      public void windowIconified(WindowEvent e)
+      {
+      }
 
       @Override
-      public void windowDeiconified(WindowEvent e) {}
+      public void windowDeiconified(WindowEvent e)
+      {
+      }
 
       @Override
-      public void windowActivated(WindowEvent e) {}
+      public void windowActivated(WindowEvent e)
+      {
+      }
 
       @Override
-      public void windowDeactivated(WindowEvent e) {}
-  };
-  frame.addWindowListener(exitListener);
-    
+      public void windowDeactivated(WindowEvent e)
+      {
+      }
+    };
+    frame.addWindowListener(exitListener);
+
     frame.add(live);
     frame.pack();
     frame.setLocationRelativeTo(null);
@@ -254,15 +257,15 @@ public class Client
         if (Client.DEBUG_GENERAL)
         {
           System.out.println("=================================================================");
-          System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size() + 
-              ") food packets.");
-          
+          System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size()
+              + ") food packets.");
+
           int totalCollectors = 0;
           for (Food thisFood : foodManager.getAllFood().values())
           {
-            totalCollectors += thisFood.getCollectors().size(); 
+            totalCollectors += thisFood.getCollectors().size();
           }
-          
+
           System.out.println("There are " + totalCollectors + " ants approaching food.");
           System.out.println("=================================================================");
         }
@@ -271,10 +274,10 @@ public class Client
       {
         System.out.println("Food Stockpile: " + Arrays.toString(data.foodStockPile));
         System.out.println("Food Stockpile Total: " + AntUtilities.getTotalFoodCount(data.foodStockPile));
-        
+
         Ant tmp = null;
         Iterator<Ant> it = Client.antManager.getAllMyAnts().values().iterator();
-        
+
         while (it.hasNext())
         {
           tmp = it.next();
@@ -338,8 +341,6 @@ public class Client
     }
   }
 
-  
-  
   private boolean sendCommData(CommData data)
   {
     CommData sendData = data.packageForSendToServer();
@@ -367,8 +368,6 @@ public class Client
     return true;
   }
 
-  
-  
   private void chooseActionsOfAllAnts(CommData commData)
   {
     for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
@@ -378,8 +377,6 @@ public class Client
     }
   }
 
-  
-  
   public void printComparisons(CommData data, AntManager manager)
   {
     AntData tmpComm = null;
@@ -413,8 +410,6 @@ public class Client
 
     System.out.println();
   }
-
-
 
   public static AntManager getActiveAntManager()
   {

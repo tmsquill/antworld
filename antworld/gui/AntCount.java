@@ -3,7 +3,7 @@ package antworld.gui;
 public class AntCount
 {
   private String type;
-  private int    count;
+  private int count;
 
   public AntCount(String type, int count)
   {

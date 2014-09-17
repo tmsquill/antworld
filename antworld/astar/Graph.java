@@ -26,9 +26,9 @@ public class Graph
   private static BufferedImage image;
   private HashMap<Location, Node> nodeMap = new HashMap<Location, Node>();
 
-  private Node                    startNode;
-  private Node                    goalNode;
-  
+  private Node startNode;
+  private Node goalNode;
+
   public static void initializeGraph(String filepath)
   {
     try
@@ -111,13 +111,13 @@ public class Graph
   {
     this.nodeMap.clear();
   }
-  
+
   public static boolean isWater(Location location)
   {
     if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return false;
 
     if (new Color(Graph.image.getRGB(location.getX(), location.getY())).getBlue() > 230) return true;
-    
+
     return false;
   }
 
@@ -160,15 +160,16 @@ public class Graph
       default:
         break;
     }
-    
-//    //TODO
-//    for (Ant value : Client.getActiveAntManager().getAllMyAnts().values())
-//    {
-//    	if (location.getX() == value.getAntData().gridX && location.getY() == value.getAntData().gridY)
-//    	{
-//    		weight = 'X';
-//    	}
-//    }
+
+    // //TODO
+    // for (Ant value : Client.getActiveAntManager().getAllMyAnts().values())
+    // {
+    // if (location.getX() == value.getAntData().gridX && location.getY() ==
+    // value.getAntData().gridY)
+    // {
+    // weight = 'X';
+    // }
+    // }
 
     return weight;
   }
