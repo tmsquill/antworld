@@ -1,39 +1,30 @@
 package antworld.client;
 
-import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
 import antworld.ant.Ant;
-import antworld.astar.AStarDispatcher;
-import antworld.astar.Graph;
-import antworld.astar.Location;
-import antworld.constants.ActivityEnum;
+import antworld.ant.AntUtilities;
+import antworld.constants.GatheringEnum;
 import antworld.data.AntAction;
 import antworld.data.AntData;
-import antworld.data.AntType;
 import antworld.data.CommData;
 import antworld.data.Constants;
-import antworld.data.Direction;
-import antworld.data.FoodData;
-import antworld.data.FoodType;
 import antworld.data.NestNameEnum;
 import antworld.data.TeamNameEnum;
-import antworld.data.AntAction.AntActionType;
 import antworld.food.Food;
 import antworld.gui.AntLive;
-import antworld.gui2.WorldGUI;
 import antworld.info.AntManager;
 import antworld.info.FoodManager;
 
@@ -43,18 +34,21 @@ public class Client
   private static final boolean      DEBUG_GENERAL = true;
 
   private static final TeamNameEnum myTeam        = TeamNameEnum.Toothachegrass;
-  private static final long         password      = 1039840868147L;
+  private static final long        password      = 1039840868147L;
   private ObjectInputStream         inputStream   = null;
   private ObjectOutputStream        outputStream  = null;
   private boolean                   isConnected   = false;
   private NestNameEnum              myNestName    = null;
   public static int                 centerX, centerY;
+  public static Rectangle nestArea;
 
   private Socket                    clientSocket;
 
   private static AntManager         antManager;
   private static FoodManager        foodManager;
 
+  
+  
   public Client(String host, int portNumber)
   {
     System.out.println("Starting Client: " + System.currentTimeMillis());
@@ -77,6 +71,8 @@ public class Client
     closeAll();
   }
 
+  
+  
   private boolean openConnection(String host, int portNumber)
   {
     try
@@ -111,6 +107,8 @@ public class Client
     return true;
   }
 
+  
+  
   public void closeAll()
   {
     System.out.println("CLosing I/O streams...");
@@ -130,6 +128,8 @@ public class Client
     System.out.println("All I/O streams closed successfully!");
   }
 
+  
+  
   public CommData chooseNest()
   {
     while (myNestName == null)
@@ -184,24 +184,61 @@ public class Client
     return null;
   }
 
+  
+  
   public void mainGameLoop(CommData data)
   {
+    //Initialize managers
     Client.antManager = new AntManager(data);
     Client.foodManager = new FoodManager(data);
+    
+    System.out.println("Ants assigned to collect water: " + Client.antManager.getWaterAnts());
+    
+    //Initialize the nest boundary
+    Client.nestArea = new Rectangle(Client.centerX - (Constants.NEST_RADIUS / 2),
+        Client.centerY - (Constants.NEST_RADIUS / 2), Constants.NEST_RADIUS, Constants.NEST_RADIUS);
+    
+    //Create and show the Swing GUI
     AntLive live = new AntLive();
-
     JFrame frame = new JFrame("Live Ant Statistics");
+    
+    WindowListener exitListener = new WindowListener() 
+    {
+      @Override
+      public void windowOpened(WindowEvent e) {}
+
+      @Override
+      public void windowClosing(WindowEvent e) 
+      {
+        int confirm = JOptionPane.showOptionDialog(null, "Close Ant World?", "Exit Confirmation", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        if (confirm == 0) 
+        {
+          closeAll();
+          System.exit(0);
+        }
+      }
+
+      @Override
+      public void windowClosed(WindowEvent e) {}
+
+      @Override
+      public void windowIconified(WindowEvent e) {}
+
+      @Override
+      public void windowDeiconified(WindowEvent e) {}
+
+      @Override
+      public void windowActivated(WindowEvent e) {}
+
+      @Override
+      public void windowDeactivated(WindowEvent e) {}
+  };
+  frame.addWindowListener(exitListener);
+    
     frame.add(live);
-    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.pack();
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-
-    live.update();
-
-    if (Client.DEBUG_GENERAL) System.out.println("Starting GUI...");
-
-    // javafx.application.Application.launch(WorldGUI.class);
 
     // TODO This is used only for debugging purposes.
     int i = 0;
@@ -218,7 +255,7 @@ public class Client
         {
           System.out.println("=================================================================");
           System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size() + 
-              " food packets.");
+              ") food packets.");
           
           int totalCollectors = 0;
           for (Food thisFood : foodManager.getAllFood().values())
@@ -226,8 +263,22 @@ public class Client
             totalCollectors += thisFood.getCollectors().size(); 
           }
           
-          System.out.println("There are " + totalCollectors + " groups of collecting food.");
+          System.out.println("There are " + totalCollectors + " ants approaching food.");
           System.out.println("=================================================================");
+        }
+      }
+      if (i % 100 == 0)
+      {
+        System.out.println("Food Stockpile: " + Arrays.toString(data.foodStockPile));
+        System.out.println("Food Stockpile Total: " + AntUtilities.getTotalFoodCount(data.foodStockPile));
+        
+        Ant tmp = null;
+        Iterator<Ant> it = Client.antManager.getAllMyAnts().values().iterator();
+        
+        while (it.hasNext())
+        {
+          tmp = it.next();
+          if (tmp.getAntData().carryUnits > 0 && tmp.getGathering() == GatheringEnum.FOOD) System.out.println(tmp);
         }
       }
       /**********************************************/
@@ -287,6 +338,8 @@ public class Client
     }
   }
 
+  
+  
   private boolean sendCommData(CommData data)
   {
     CommData sendData = data.packageForSendToServer();
@@ -314,6 +367,8 @@ public class Client
     return true;
   }
 
+  
+  
   private void chooseActionsOfAllAnts(CommData commData)
   {
     for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
@@ -323,6 +378,8 @@ public class Client
     }
   }
 
+  
+  
   public void printComparisons(CommData data, AntManager manager)
   {
     AntData tmpComm = null;
@@ -357,116 +414,7 @@ public class Client
     System.out.println();
   }
 
-  // TODO This is for testing the GUI only.
-  public static void initManagers()
-  {
-    CommData data = new CommData(NestNameEnum.ACROBAT, TeamNameEnum.Canarygrass);
 
-    ArrayList<AntData> myAnts = new ArrayList<AntData>();
-    AntData a1 = new AntData(213, AntType.ATTACK, NestNameEnum.ACORN, TeamNameEnum.BlueGrama);
-    a1.gridX = 1234;
-    a1.gridY = 1000;
-
-    AntData a2 = new AntData(214, AntType.DEFENCE, NestNameEnum.ACORN, TeamNameEnum.BlueGrama);
-    a2.gridX = 1264;
-    a2.gridY = 1104;
-
-    AntData a3 = new AntData(215, AntType.MEDIC, NestNameEnum.ACORN, TeamNameEnum.BlueGrama);
-    a3.gridX = 1215;
-    a3.gridY = 1045;
-
-    AntData a4 = new AntData(216, AntType.SPEED, NestNameEnum.ACORN, TeamNameEnum.BlueGrama);
-    a4.gridX = 1190;
-    a4.gridY = 1099;
-
-    AntData a5 = new AntData(217, AntType.VISION, NestNameEnum.ACORN, TeamNameEnum.BlueGrama);
-    a5.gridX = 1243;
-    a5.gridY = 1111;
-
-    myAnts.add(a1);
-    myAnts.add(a2);
-    myAnts.add(a3);
-    myAnts.add(a4);
-    myAnts.add(a5);
-
-    HashSet<AntData> enemyAnts = new HashSet<AntData>();
-    AntData b1 = new AntData(576, AntType.BASIC, NestNameEnum.VELVETY_TREE, TeamNameEnum.Lovegrass);
-    b1.gridX = 1334;
-    b1.gridY = 1100;
-
-    AntData b2 = new AntData(577, AntType.BASIC, NestNameEnum.VELVETY_TREE, TeamNameEnum.Lovegrass);
-    b2.gridX = 1364;
-    b2.gridY = 1204;
-
-    AntData b3 = new AntData(578, AntType.ATTACK, NestNameEnum.VELVETY_TREE, TeamNameEnum.Lovegrass);
-    b3.gridX = 1315;
-    b3.gridY = 1145;
-
-    AntData b4 = new AntData(579, AntType.MEDIC, NestNameEnum.VELVETY_TREE, TeamNameEnum.Lovegrass);
-    b4.gridX = 1290;
-    b4.gridY = 1199;
-
-    AntData b5 = new AntData(580, AntType.CARRY, NestNameEnum.VELVETY_TREE, TeamNameEnum.Lovegrass);
-    b5.gridX = 1343;
-    b5.gridY = 1211;
-
-    enemyAnts.add(b1);
-    enemyAnts.add(b2);
-    enemyAnts.add(b3);
-    enemyAnts.add(b4);
-    enemyAnts.add(b5);
-
-    HashSet<FoodData> food = new HashSet<FoodData>();
-    food.add(new FoodData(FoodType.ATTACK, 1400, 235, 50));
-    food.add(new FoodData(FoodType.MEDIC, 1410, 214, 50));
-    food.add(new FoodData(FoodType.BASIC, 1415, 267, 50));
-    food.add(new FoodData(FoodType.VISION, 1420, 246, 50));
-    food.add(new FoodData(FoodType.ATTACK, 1425, 232, 50));
-
-    data.myAntList = myAnts;
-    data.enemyAntSet = enemyAnts;
-    data.foodSet = food;
-
-    Client.antManager = new AntManager(data);
-    Client.foodManager = new FoodManager(data);
-  }
-
-  // TODO This is for debugging purposes only.
-  // public static void initializeActions(WorldGUI gui)
-  // {
-  // Random rand = new Random();
-  //
-  // while (true)
-  // {
-  // try
-  // {
-  // Thread.sleep(1000);
-  // }
-  // catch (InterruptedException e1)
-  // {
-  // }
-  //
-  // Ant tmp = null;
-  // Iterator<Ant> it = Client.antManager.getAllMyAnts().iterator();
-  //
-  // while (it.hasNext())
-  // {
-  // tmp = it.next();
-  //
-  // tmp.antData.gridX = tmp.antData.gridX + rand.nextInt(3) - 1;
-  // tmp.antData.gridY = tmp.antData.gridY + rand.nextInt(3) - 1;
-  // tmp.updateModel();
-  // }
-  //
-  // Platform.runLater(new Runnable()
-  // {
-  // public void run()
-  // {
-  // gui.updateGUI();
-  // }
-  // });
-  // }
-  // }
 
   public static AntManager getActiveAntManager()
   {
@@ -480,6 +428,8 @@ public class Client
 
   public static void main(String[] args)
   {
-    new Client("phoebe.cs.unm.edu", Constants.PORT);
+    String host = "b146-69";
+    if (args.length > 0) host = args[0];
+    new Client(host, Constants.PORT);
   }
 }

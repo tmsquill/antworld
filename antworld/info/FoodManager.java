@@ -8,11 +8,10 @@ import java.util.List;
 
 import antworld.ant.Ant;
 import antworld.astar.Location;
-import antworld.data.AntData;
+import antworld.constants.ActivityEnum;
 import antworld.data.CommData;
 import antworld.data.FoodData;
 import antworld.data.FoodType;
-import antworld.exceptions.InvalidAntTypeException;
 import antworld.food.Food;
 import antworld.gui.FoodCount;
 
@@ -66,9 +65,20 @@ public class FoodManager
       }
     }
     
-    for (Food food : this.allFood.values())
+    Food tmpFood = null;
+    Iterator<Food> managerIt = this.allFood.values().iterator();
+    
+    while (managerIt.hasNext())
     {
-      if (!data.foodSet.contains(this)) this.allFood.remove(food);
+      tmpFood = managerIt.next();
+      if (!data.foodSet.contains(tmpFood.getFoodData()))
+      {
+        for (Ant ant : tmpFood.getCollectors())
+        {
+          if (ant.getActivity() != ActivityEnum.CARRYING_RESOURCE) ant.setActivity(ActivityEnum.SEARCHING_FOR_RESOURCE);
+        }
+        managerIt.remove();
+      }
     }
   }
 
