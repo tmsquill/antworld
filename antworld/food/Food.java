@@ -54,8 +54,7 @@ public class Food
       break;
     }
     this.collectors.add(ant);
-    System.out.println("Assigning ant " + ant.getAntData().id + " to get food at (" + this.foodData.gridX + ", " + this.foodData.gridY +
-        "). Collector Number: " + (this.collectors.size() - 1));
+    System.out.println("Assigning ant " + ant.getAntData().id + " to get food at (" + this.foodData.gridX + ", " + this.foodData.gridY + ").");
     return tmp;
   }
   

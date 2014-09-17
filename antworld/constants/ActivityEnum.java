@@ -2,7 +2,7 @@ package antworld.constants;
 
 public enum ActivityEnum
 {
-  SEARCHING_FOR_FOOD, APPROACHING_FOOD, CARRYING_FOOD, RETREATING;
+  RETREATING, CARRYING_RESOURCE, APPROACHING_FOOD, SEARCHING_FOR_RESOURCE;
 
   public static final int SIZE = values().length;
 }

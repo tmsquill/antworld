@@ -1,5 +1,6 @@
 package antworld.astar;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -9,8 +10,6 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
-import antworld.ant.Ant;
-import antworld.client.Client;
 import antworld.data.Direction;
 
 /**
@@ -112,10 +111,19 @@ public class Graph
   {
     this.nodeMap.clear();
   }
+  
+  public static boolean isWater(Location location)
+  {
+    if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return false;
+
+    if (new Color(Graph.image.getRGB(location.getX(), location.getY())).getBlue() > 230) return true;
+    
+    return false;
+  }
 
   public static char calcWeight(Location location)
   {
-    if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) { return 'X'; }
+    if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return 'X';
 
     int colorValue = Graph.image.getRGB(location.getX(), location.getY());
     char weight = '0';

@@ -1,6 +1,8 @@
 package antworld.gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
@@ -16,19 +18,19 @@ import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import antworld.ant.Ant;
+import antworld.client.Client;
 import antworld.constants.ActivityEnum;
 import antworld.constants.Constants;
+import antworld.constants.GatheringEnum;
 import antworld.data.AntData;
 import antworld.data.FoodData;
 
-public class AntWorldImage extends JLabel
+public class AntWorldImage extends JPanel
 {
   private BufferedImage           image;
-  private Graphics2D              graphics;
-
-  private HashMap<Point, Integer> colorMap = new HashMap<Point, Integer>();
 
   public AntWorldImage(String filename)
   {
@@ -41,59 +43,64 @@ public class AntWorldImage extends JLabel
       System.out.println("AntWorldImage Error: Unable to read the image file specified by " + filename);
       e.printStackTrace();
     }
-
-    this.graphics = image.createGraphics();
-    this.setIcon(new ImageIcon(image));
+    
+    this.setPreferredSize(new Dimension(5000, 2500));
   }
-
-  public void clearAnts()
+  
+  @Override
+  protected void paintComponent(Graphics g)
   {
-    for (Entry<Point, Integer> entry : this.colorMap.entrySet())
-    {
-      this.graphics.setColor(new Color(entry.getValue()));
-      this.graphics.fillRect(entry.getKey().x - 1, entry.getKey().y - 1, 3, 3);
-    }
-
-    this.colorMap.clear();
+    super.paintComponent(g);
+    
+    this.paintImage(g);
+    this.paintMyAnts(g);
+    this.paintEnemyAnts(g);
+    this.paintFood(g);
   }
 
-  public void paintMyAnts(HashMap<Integer, Ant> ants)
+  public void paintImage(Graphics g)
+  {
+    g.drawImage(image, 0, 0, null);
+  }
+
+  public void paintMyAnts(Graphics g)
   {    
-    for (Ant value : ants.values())
+    for (Ant value : Client.getActiveAntManager().getAllMyAnts().values())
     {
-      if (value.getActivity() == ActivityEnum.APPROACHING_FOOD) this.graphics.setColor(new Color(0x00CCFF));
-      else if (value.getActivity() == ActivityEnum.CARRYING_FOOD) this.graphics.setColor(new Color(0xFF0000));
-      else this.graphics.setColor(Constants.MY_ANT_COLOR);
-      this.colorMap.put(new Point(value.getAntData().gridX, value.getAntData().gridY), this.image.getRGB(value.getAntData().gridX, value.getAntData().gridY));
-      this.graphics.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
+      if (value.isInjured()) g.setColor(Color.BLACK);
+      else if (value.getActivity() == ActivityEnum.APPROACHING_FOOD) g.setColor(new Color(0x00CCFF));
+      else if (value.getAntData().carryUnits > 0 && value.getGathering() == GatheringEnum.FOOD) g.setColor(new Color(0x00FF00));
+      else if (value.getAntData().carryUnits > 0 && value.getGathering() == GatheringEnum.WATER) g.setColor(new Color(0xFF0000));
+      else if (value.getGathering() == GatheringEnum.FOOD) g.setColor(Constants.MY_FOOD_ANT_COLOR);
+      else if (value.getGathering() == GatheringEnum.WATER) g.setColor(Constants.MY_WATER_ANT_COLOR);
+      else g.setColor(new Color(0xFFFFFF));
+      g.fillRect(value.getAntData().gridX - 1, value.getAntData().gridY - 1, 3, 3);
     }
   }
 
-  public void paintEnemyAnts(Set<AntData> enemyAnts)
+  public void paintEnemyAnts(Graphics g)
   {
-    this.graphics.setColor(Constants.ENEMY_ANT_COLOR);
+    g.setColor(Constants.ENEMY_ANT_COLOR);
     AntData tmp = null;
-    Iterator<AntData> it = enemyAnts.iterator();
+    Iterator<AntData> it = Client.getActiveAntManager().getAllEnemyAnts().iterator();
 
     while (it.hasNext())
     {
       tmp = it.next();
-      this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
-      this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
+      g.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
   }
 
-  public void paintFood(Set<FoodData> foodData)
+  public void paintFood(Graphics g)
   {
-    this.graphics.setColor(Constants.FOOD_COLOR);
+    g.setColor(Constants.FOOD_COLOR);
     FoodData tmp = null;
-    Iterator<FoodData> it = foodData.iterator();
+    Iterator<FoodData> it = Client.getActiveFoodManager().getFoodData().iterator();
 
     while (it.hasNext())
     {
       tmp = it.next();
-      this.colorMap.put(new Point(tmp.gridX, tmp.gridY), this.image.getRGB(tmp.gridX, tmp.gridY));
-      this.graphics.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
+      g.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
   }
 }
