@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Set;
 
 import antworld.ant.Ant;
+import antworld.constants.GatheringEnum;
 import antworld.data.AntData;
 import antworld.data.AntType;
 import antworld.data.CommData;
-import antworld.exceptions.InvalidAntTypeException;
 import antworld.gui.AntCount;
 
 /**
@@ -66,6 +66,18 @@ public class AntManager
     {
       tmp = it.next();
       this.allMyAnts.put(new Integer(tmp.id), new Ant(tmp));
+    }
+    
+    int waterAnts = 9;
+    Ant tmpAnt = null;
+    Iterator<Ant> antIt = this.allMyAnts.values().iterator();
+    
+    while (antIt.hasNext())
+    {
+      tmpAnt = antIt.next();
+      tmpAnt.setGathering(GatheringEnum.WATER);
+      if (waterAnts <= 0) break; 
+      waterAnts--;
     }
 
     this.allEnemyAnts = data.enemyAntSet;
@@ -131,6 +143,19 @@ public class AntManager
     this.medicAnts.clear();
     this.speedAnts.clear();
     this.visionAnts.clear();
+  }
+  
+  public int getWaterAnts()
+  {
+    int count = 0;
+    Iterator<Ant> it = this.allMyAnts.values().iterator();
+    
+    while (it.hasNext())
+    {
+      if (it.next().getGathering() == GatheringEnum.WATER) count++;
+    }
+    
+    return count;
   }
 
   /**

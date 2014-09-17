@@ -6,7 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,6 +16,10 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 
+import antworld.ant.Ant;
+import antworld.astar.Location;
+import antworld.client.Client;
+import antworld.constants.ActivityEnum;
 import antworld.constants.AggressionEnum;
 import antworld.data.AntType;
 import antworld.data.FoodType;
@@ -35,14 +38,13 @@ public class AntControl extends JTabbedPane
   public class AntCommand extends JPanel implements ActionListener
   {
     private JButton                   returnToNestButton  = this.createJButton("Return To Nest");
+    private JButton                   forceRandomWalkButton = this.createJButton("Force Random Walk");
     private JButton                   goLocationButton    = this.createJButton("Go to Location");
     private JButton                   goNestButton        = this.createJButton("Go to Nest");
-    private JButton                   setAggressionButton = this.createJButton("Set Aggression");
 
     private JTextField                goLocationX         = new JTextField();
     private JTextField                goLocationY         = new JTextField();
     private JComboBox<NestNameEnum>   goNestMenu          = this.createJComboBox(NestNameEnum.values());
-    private JComboBox<AggressionEnum> setAggressionMenu   = this.createJComboBox(AggressionEnum.values());
 
     private AntCountTableModel        model;
     private JTable                    table;
@@ -62,19 +64,24 @@ public class AntControl extends JTabbedPane
       c.gridy = 0;
       c.gridwidth = 3;
       this.add(this.returnToNestButton, c);
-
+      
       c.gridx = 0;
       c.gridy = 1;
+      c.gridwidth = 3;
+      this.add(this.forceRandomWalkButton);
+
+      c.gridx = 0;
+      c.gridy = 2;
       c.gridwidth = 1;
       this.add(this.goLocationX, c);
 
       c.gridx = 1;
-      c.gridy = 1;
+      c.gridy = 2;
       c.gridwidth = 1;
       this.add(this.goLocationY, c);
 
       c.gridx = 2;
-      c.gridy = 1;
+      c.gridy = 2;
       c.gridwidth = 1;
       this.add(this.goLocationButton, c);
 
@@ -87,16 +94,6 @@ public class AntControl extends JTabbedPane
       c.gridy = 2;
       c.gridwidth = 1;
       this.add(this.goNestButton, c);
-
-      c.gridx = 0;
-      c.gridy = 3;
-      c.gridwidth = 2;
-      this.add(this.setAggressionMenu, c);
-
-      c.gridx = 2;
-      c.gridy = 3;
-      c.gridwidth = 1;
-      this.add(this.setAggressionButton, c);
 
       c.gridx = 3;
       c.gridy = 0;
@@ -131,7 +128,29 @@ public class AntControl extends JTabbedPane
     public void actionPerformed(ActionEvent e)
     {
       Object event = e.getSource();
-      if (event == this.goLocationButton)
+      if (event == this.returnToNestButton)
+      {
+        System.out.println("Returning all ants to the nest...");
+        for (Ant ant : Client.getActiveAntManager().getAllMyAnts().values())
+        {
+          ant.setActivity(ActivityEnum.RETREATING);
+          ant.getDirections().clear();
+          ant.setDestination(new Location(Client.centerX, Client.centerY));
+          ant.setDirections(Ant.astar.dispatchAStar(ant.getCurrentLocation(), ant.getDestination()));
+        }
+      }
+      else if (event == this.forceRandomWalkButton)
+      {
+        System.out.println("Forcing all ants to take a random walk for 10 steps...");
+        for (Ant ant : Client.getActiveAntManager().getAllMyAnts().values())
+        {
+          ant.setActivity(ActivityEnum.SEARCHING_FOR_RESOURCE);
+          ant.getDirections().clear();
+          ant.assignRandomDirections(10);
+          ant.setDirections(Ant.astar.dispatchAStar(ant.getCurrentLocation(), ant.getDestination()));
+        }
+      }
+      else if (event == this.goLocationButton)
       {
         Point location = new Point(Integer.parseInt(this.goLocationX.getText()), Integer.parseInt(this.goLocationY
             .getText()));
@@ -141,10 +160,6 @@ public class AntControl extends JTabbedPane
       {
         // TODO Get the location of the selected nest and tell the ants to go
         // there.
-      }
-      else if (event == this.setAggressionButton)
-      {
-        // TODO Set the aggression level of the ants.
       }
     }
   }
