@@ -35,11 +35,11 @@ public class Client
   private static final boolean DEBUG_CLIENT = false;
   private static final boolean DEBUG_GENERAL = true;
 
-  private static final TeamNameEnum myTeam = TeamNameEnum.RANDOM_WALKERS;
-  //private static final long password = 1039840868147L;
+  private static final TeamNameEnum myTeam = TeamNameEnum.Toothachegrass;
+  private static final long password = 1039840868147L;
 
   
-  private static final long password = 962740848319L;
+//  private static final long password = 962740848319L;
   private ObjectInputStream inputStream = null;
   private ObjectOutputStream outputStream = null;
   private boolean isConnected = false;
@@ -199,7 +199,9 @@ public class Client
     Client.nestArea = new Rectangle(Client.centerX - (Constants.NEST_RADIUS / 2), Client.centerY
         - (Constants.NEST_RADIUS / 2), Constants.NEST_RADIUS, Constants.NEST_RADIUS);
     
-    Client.allowedArea = new Rectangle(Client.centerX - 400, Client.centerY - 300, 800, 600);
+    Client.allowedArea = new Rectangle(Client.centerX - 300, Client.centerY - 200, 600, 400);
+    
+    Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y + 525, 150, 75));
 
     // Create and show the Swing GUI
     AntLive live = new AntLive();
@@ -299,14 +301,14 @@ public class Client
       }
       /**********************************************/
       
-      Graph.unwalkableZones.clear();
-      AntData tmp = null;
-      Iterator<AntData> it = data.enemyAntSet.iterator();
-      while (it.hasNext())
-      {
-        tmp = it.next();
-        Graph.unwalkableZones.add(new Rectangle(tmp.gridX - 15, tmp.gridY - 15, 30, 30));
-      }
+//      Graph.unwalkableEnemyAntZones.clear();
+//      AntData tmp = null;
+//      Iterator<AntData> it = data.enemyAntSet.iterator();
+//      while (it.hasNext())
+//      {
+//        tmp = it.next();
+//        Graph.unwalkableEnemyAntZones.add(new Rectangle(tmp.gridX - 20, tmp.gridY - 20, 40, 40));
+//      }
 
       try
       {
@@ -445,7 +447,7 @@ public class Client
 
   public static void main(String[] args)
   {
-    String host = "b146-73";
+    String host = "b146-69";
     if (args.length > 0) host = args[0];
     new Client(host, Constants.PORT);
   }

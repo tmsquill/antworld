@@ -2,6 +2,7 @@ package antworld.ant;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -36,6 +37,8 @@ public class Ant
 
   /** The current list of directions the ant is following, used by the AI */
   private LinkedList<Direction> directions = new LinkedList<Direction>();
+  
+  private Rectangle safeZone = new Rectangle();
 
   /**
    * Used when food is spotted and the ant is assigned to pick it up, the ant
@@ -98,6 +101,38 @@ public class Ant
     // The ant cannot perform an action this tick, so return STASIS to avoid
     // computation.
     if (this.getAntData().ticksUntilNextAction > 0) { return action; }
+    
+    safeZone = new Rectangle(this.antData.gridX - 10, this.antData.gridY - 10, 20, 20);
+    
+  AntData tmpEnemy = null;
+  Iterator<AntData> it = data.enemyAntSet.iterator();
+  int deltaX;
+  int deltaY;
+  while (it.hasNext())
+  {
+	  tmpEnemy = it.next();
+    if (this.safeZone.contains(new Point(tmpEnemy.gridX, tmpEnemy.gridY)));
+    {
+    	
+    	this.activity = ActivityEnum.RETREATING;
+//    	deltaX = tmp.gridX - this.antData.gridX;
+//    	deltaY = tmp.gridY - this.antData.gridY;
+//    	
+//    	if (deltaY < 0)
+//    	{
+//    		AntutiDirection.NORTH;
+//    	}
+//        else if (deltaX > 0 && deltaY < 0) Direction.NORTHEAST;
+//        else if (deltaX > 0)  Direction.EAST;
+//        else if (deltaX > 0 && deltaY > 0) Direction.SOUTHEAST;
+//        else if (deltaY > 0)  Direction.SOUTH;
+//        else if (deltaX < 0 && deltaY > 0) Direction.SOUTHWEST;
+//        else if (deltaY < 0)  Direction.WEST;
+//        else if (deltaX < 0 && deltaY < 0) Direction.NORTHWEST;
+//        else return null;
+    
+    }
+  }
 
     // If the ant is injured, tell it to retreat to the nest.
     if (this.isInjured() && this.activity != ActivityEnum.RETREATING)
@@ -140,6 +175,7 @@ public class Ant
       action.direction = this.getNextDirection();
       return action;
     }
+    
 
     // Ensure the ant on its way home if it has food.
     if (this.antData.carryUnits > 0) this.setActivity(ActivityEnum.CARRYING_RESOURCE);
@@ -479,7 +515,7 @@ public class Ant
 
   public boolean isInjured()
   {
-    return this.antData.health < (this.antData.antType.getMaxHealth() / 2) ? true : false;
+    return this.antData.health < (this.antData.antType.getMaxHealth() - 5) ? true : false;
   }
 
   public boolean isInGroup()

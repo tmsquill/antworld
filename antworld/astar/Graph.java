@@ -29,7 +29,9 @@ public class Graph
   private static BufferedImage image;
   private HashMap<Location, Node> nodeMap = new HashMap<Location, Node>();
   
-  public static Set<Rectangle> unwalkableZones = new HashSet<Rectangle>();
+//  public static Set<Rectangle> unwalkableEnemyAntZones = new HashSet<Rectangle>();
+  
+  public static Set<Rectangle> unwalkableStaticZones = new HashSet<Rectangle>();
 
   private Node startNode;
   private Node goalNode;
@@ -134,11 +136,18 @@ public class Graph
 
     if (!Client.allowedArea.contains(new Point(location.getX(), location.getY()))) return 'X';
     
-    Iterator<Rectangle> it = Graph.unwalkableZones.iterator();
+//    Iterator<Rectangle> antIt = Graph.unwalkableEnemyAntZones.iterator();
     
-    while (it.hasNext())
+//    while (antIt.hasNext())
+//    {
+//      if (antIt.next().contains(new Point(location.getX(), location.getY()))) return 'X';
+//    }
+    
+    Iterator<Rectangle> staticIt = Graph.unwalkableStaticZones.iterator();
+    
+    while (staticIt.hasNext())
     {
-      if (it.next().contains(new Point(location.getX(), location.getY()))) return 'X';
+      if (staticIt.next().contains(new Point(location.getX(), location.getY()))) return 'X';
     }
 
     return '0';
