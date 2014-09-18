@@ -66,4 +66,3 @@ This program must be run with an up to date version of Joel Castellanos' AntWorl
 * To avoid enemy ants, we draw a rectangle around every friendly ant.  If enemy ants enter this rectangle, our ant will calculate their average location and begin walking int he opposite direction.  This leads to very few deaths from brainless bots.  This only fails when the enemy ants surround our ant.
 * An unimplemented group structure is included in antworld.group.  This structure was designed to have the ants form into groups which will hold travel and battle formations when appropriate.  These groups had different types, similar to ant types, which dictate their main function.  
   * Due to time constraints higher priorities, this feature was never fully implemented and eventually abandoned.
-* 
