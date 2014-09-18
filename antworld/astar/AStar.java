@@ -1,5 +1,6 @@
 package antworld.astar;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,6 +13,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
+import antworld.client.Client;
 import antworld.data.Direction;
 
 /**
@@ -127,7 +129,7 @@ public class AStar implements Callable<LinkedList<Direction>>
       }
     }
 
-    return null;
+    return new LinkedList<Direction>();
   }
 
   public LinkedList<Direction> getDirections(List<Node> constructedPath)

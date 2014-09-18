@@ -50,7 +50,6 @@ public class FoodManager
   {
     Food tmp = null;
 
-    // TODO fix the memory leak.
     for (FoodData food : data.foodSet)
     {
       tmp = this.allFood.get(new Location(food.gridX, food.gridY));
@@ -58,7 +57,6 @@ public class FoodManager
       if (tmp != null)
       {
         tmp.setFoodData(food);
-        ;
       }
       else
       {
@@ -82,6 +80,8 @@ public class FoodManager
         managerIt.remove();
       }
     }
+    
+    this.worldFood = data.foodSet;
   }
 
   public List<FoodCount> getFoodCounts()

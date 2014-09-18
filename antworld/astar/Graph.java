@@ -1,6 +1,8 @@
 package antworld.astar;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
@@ -10,6 +12,7 @@ import java.util.Set;
 
 import javax.imageio.ImageIO;
 
+import antworld.client.Client;
 import antworld.data.Direction;
 
 /**
@@ -25,6 +28,8 @@ public class Graph
    */
   private static BufferedImage image;
   private HashMap<Location, Node> nodeMap = new HashMap<Location, Node>();
+  
+  public static Set<Rectangle> unwalkableZones = new HashSet<Rectangle>();
 
   private Node startNode;
   private Node goalNode;
@@ -52,7 +57,7 @@ public class Graph
    */
   public void addNode(Location location)
   {
-    this.nodeMap.put(location, new Node(location, Graph.calcWeight(location)));
+    this.nodeMap.put(location, new Node(location, Graph.isWalkable(location)));
   }
 
   /**
@@ -93,7 +98,7 @@ public class Graph
 
       if (tmpNode == null)
       {
-        tmpWeight = Graph.calcWeight(tmpLocation);
+        tmpWeight = Graph.isWalkable(tmpLocation);
 
         if (tmpWeight == 'X') continue;
 
@@ -121,57 +126,22 @@ public class Graph
     return false;
   }
 
-  public static char calcWeight(Location location)
+  public static char isWalkable(Location location)
   {
     if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return 'X';
+    
+    if (new Color(Graph.image.getRGB(location.getX(), location.getY())).getBlue() > 230) return 'X';
 
-    int colorValue = Graph.image.getRGB(location.getX(), location.getY());
-    char weight = '0';
-
-    switch (colorValue)
+    if (!Client.allowedArea.contains(new Point(location.getX(), location.getY()))) return 'X';
+    
+    Iterator<Rectangle> it = Graph.unwalkableZones.iterator();
+    
+    while (it.hasNext())
     {
-      case 0x0000C0:
-        weight = 'X';
-        break;
-      case 0x0000C8: // Cannot traverse terrain, not Jesus.
-        weight = 'X';
-        break;
-      case 0xAA00FF:
-        weight = 'X';
-        break;
-      case 0xA300F4:
-        weight = 'X';
-        break;
-      case 0x9800E3:
-        weight = 'X';
-        break;
-      case 0x8E00D5:
-        weight = 'X';
-        break;
-      case 0x8900CD:
-        weight = 'X';
-        break;
-      case 0x7C00BA:
-        weight = 'X';
-        break;
-      case 0x7000A8:
-        weight = 'X';
-        break;
-      default:
-        break;
+      if (it.next().contains(new Point(location.getX(), location.getY()))) return 'X';
     }
 
-    // //TODO
-    // for (Ant value : Client.getActiveAntManager().getAllMyAnts().values())
-    // {
-    // if (location.getX() == value.getAntData().gridX && location.getY() ==
-    // value.getAntData().gridY)
-    // {
-    // weight = 'X';
-    // }
-    // }
-
-    return weight;
+    return '0';
   }
 
   /**

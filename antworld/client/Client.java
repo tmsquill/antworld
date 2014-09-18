@@ -16,11 +16,13 @@ import javax.swing.JOptionPane;
 
 import antworld.ant.Ant;
 import antworld.ant.AntUtilities;
+import antworld.astar.Graph;
 import antworld.constants.GatheringEnum;
 import antworld.data.AntAction;
 import antworld.data.AntData;
 import antworld.data.CommData;
 import antworld.data.Constants;
+import antworld.data.NestData;
 import antworld.data.NestNameEnum;
 import antworld.data.TeamNameEnum;
 import antworld.food.Food;
@@ -33,14 +35,18 @@ public class Client
   private static final boolean DEBUG_CLIENT = false;
   private static final boolean DEBUG_GENERAL = true;
 
-  private static final TeamNameEnum myTeam = TeamNameEnum.Toothachegrass;
-  private static final long password = 1039840868147L;
+  private static final TeamNameEnum myTeam = TeamNameEnum.RANDOM_WALKERS;
+  //private static final long password = 1039840868147L;
+
+  
+  private static final long password = 962740848319L;
   private ObjectInputStream inputStream = null;
   private ObjectOutputStream outputStream = null;
   private boolean isConnected = false;
   private NestNameEnum myNestName = null;
   public static int centerX, centerY;
   public static Rectangle nestArea;
+  public static Rectangle allowedArea;
 
   private Socket clientSocket;
 
@@ -134,7 +140,7 @@ public class Client
       {
       }
 
-      NestNameEnum requestedNest = NestNameEnum.FIRE;
+      NestNameEnum requestedNest = NestNameEnum.YELLOW_MEADOW;
       CommData data = new CommData(requestedNest, myTeam);
       data.password = password;
 
@@ -178,6 +184,11 @@ public class Client
 
   public void mainGameLoop(CommData data)
   {
+    for (NestData value : data.nestData)
+    {
+      System.out.println("Name: " + value.nestName.name() + " Location: (" + value.centerX + ", " + value.centerY + ")");
+    }
+    
     // Initialize managers
     Client.antManager = new AntManager(data);
     Client.foodManager = new FoodManager(data);
@@ -187,6 +198,8 @@ public class Client
     // Initialize the nest boundary
     Client.nestArea = new Rectangle(Client.centerX - (Constants.NEST_RADIUS / 2), Client.centerY
         - (Constants.NEST_RADIUS / 2), Constants.NEST_RADIUS, Constants.NEST_RADIUS);
+    
+    Client.allowedArea = new Rectangle(Client.centerX - 400, Client.centerY - 300, 800, 600);
 
     // Create and show the Swing GUI
     AntLive live = new AntLive();
@@ -285,6 +298,15 @@ public class Client
         }
       }
       /**********************************************/
+      
+      Graph.unwalkableZones.clear();
+      AntData tmp = null;
+      Iterator<AntData> it = data.enemyAntSet.iterator();
+      while (it.hasNext())
+      {
+        tmp = it.next();
+        Graph.unwalkableZones.add(new Rectangle(tmp.gridX - 15, tmp.gridY - 15, 30, 30));
+      }
 
       try
       {
@@ -423,7 +445,7 @@ public class Client
 
   public static void main(String[] args)
   {
-    String host = "b146-69";
+    String host = "b146-73";
     if (args.length > 0) host = args[0];
     new Client(host, Constants.PORT);
   }

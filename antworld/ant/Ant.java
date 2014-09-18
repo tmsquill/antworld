@@ -1,6 +1,7 @@
 package antworld.ant;
 
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -214,12 +215,14 @@ public class Ant
       return action;
     }
 
-    if (Graph.isWater(new Location(this.antData.gridX - 1, this.antData.gridY)) && this.antData.carryUnits == 0
-        && this.gather == GatheringEnum.WATER)
+    if ((Graph.isWater(new Location(this.antData.gridX - 1, this.antData.gridY - 1)) ||
+        Graph.isWater(new Location(this.antData.gridX, this.antData.gridY - 1)) ||
+        Graph.isWater(new Location(this.antData.gridX - 1, this.antData.gridY))) &&
+        this.antData.carryUnits == 0 && this.gather == GatheringEnum.WATER)
     {
       this.directions.clear();
       action.type = AntActionType.PICKUP;
-      action.direction = Direction.WEST;
+      action.direction = Direction.SOUTHWEST;
       action.quantity = 24;
       return action;
     }
@@ -235,7 +238,7 @@ public class Ant
       {
         if (value.isFull()
             || AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
-                value.getFoodData().gridY) > this.antData.antType.getVisionRadius() * 3) continue;
+                value.getFoodData().gridY) > this.antData.antType.getVisionRadius() * 4) continue;
         else
         {
           this.directions.clear();
@@ -249,7 +252,7 @@ public class Ant
         }
       }
 
-      if (this.directions.isEmpty()) this.assignRandomDirections(100);
+      if (this.directions.isEmpty()) this.assignRandomDirections(50);
       action.type = AntActionType.MOVE;
       action.direction = this.getNextDirection();
       return action;
@@ -260,8 +263,7 @@ public class Ant
     {
       if (this.gather == GatheringEnum.FOOD)
       {
-        this.directions.clear();
-        this.assignRandomDirections(100);
+        this.assignRandomDirections(50);
 
         action.type = AntActionType.MOVE;
         action.direction = this.getNextDirection();
@@ -269,16 +271,27 @@ public class Ant
       }
       else
       {
-        Direction tmp = null;
-        int i = random.nextInt(3);
-        if (i == 0) tmp = Direction.NORTHWEST;
-        if (i == 1) tmp = Direction.WEST;
-        if (i == 2) tmp = Direction.SOUTHWEST;
+        if (this.antData.gridX < 1060 && this.antData.gridY > 1010)
+        {
+          Direction tmp = null;
+          int i = random.nextInt(3);
+          if (i == 0) tmp = Direction.WEST;
+          else if (i == 1) tmp = Direction.SOUTHWEST;
+          else if (i == 2) tmp = Direction.SOUTH;
 
-        this.directions.push(tmp);
-        action.type = AntActionType.MOVE;
-        action.direction = this.getNextDirection();
-        return action;
+          this.directions.push(tmp);
+          action.type = AntActionType.MOVE;
+          action.direction = this.getNextDirection();
+          return action;
+        }
+        else
+        {
+          this.setDestination(new Location(1055, 1015));
+          this.setDirections(astar.dispatchAStar(new Location(this.antData.gridX, this.antData.gridY), destination));
+          action.type = AntActionType.MOVE;
+          action.direction = this.getNextDirection();
+          return action;
+        }
       }
     }
 
@@ -352,7 +365,7 @@ public class Ant
           break;
       }
     }
-    while (Graph.calcWeight(new Location(randomDestination.x, randomDestination.y)) == 'X');
+    while (Graph.isWalkable(new Location(randomDestination.x, randomDestination.y)) == 'X');
 
     this.destination = new Location(randomDestination.x, randomDestination.y);
     this.setDirections(astar.dispatchAStar(new Location(this.getAntData().gridX, this.getAntData().gridY), destination));
