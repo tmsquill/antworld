@@ -8,7 +8,7 @@ Client Version: clientPack_2014_9_10
 
 ####Authors
 J. Jake Nichol  jjaken@unm.edu <br>
-Troy Sqillaci   zivia@unm.edu
+Troy Squillaci   zivia@unm.edu
 
 ###Project Description
 AntWorld is a multiplayer game in which players control a nest of ants.  Nests are distributed across a map that is populated with several different types of food.  Each type of food si used to birth a new ant of that type (ex. speed food births speed ants).<br> <br>
