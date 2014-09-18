@@ -20,20 +20,50 @@ Upon exiting the nest, ants begin a psuedo-random walk to find food.  Upon findi
 ###How to use
 This program must be run with an up to date version of Joel Castellanos' AntWorld server and client pack.
   * The server version is maintained by Joel Castellanos and can be assumed to be equivalent to the most current client pack.
-  * The current client version is at the top of this file.  
-  
+  * The current client version is at the top of this file.
+
+
 1. Package the java project into an executable jar.
 2. From the terminal, run:
-```
-$ java -jar <path_to_jar_file> <appropriate_server_name>
-```
-<br>
-3. A JFrame will appear with a map of the world.  The ants are painted at their locations as well as food and enemy ants.  Our ants are color coded to show food status as follows:
+
+
+    ```
+    $ java -jar <path_to_jar_file> <appropriate_server_name>
+    ```
+
+
+3. A JFrame will appear with a map of the world.  The ants are painted at their locations as well as food and enemy ants.  Our ants are color coded to show status as follows:
   * Orange - Searching for food
   * Teal - Approaching discovered food
   * Green - Carrying food back to nest
-4. ...
+  * Black - Injured (15 health remaining)
+  * Blue - Enemy ant
+  * White - State is unknown (not seen to occur)
+
+
+4. Buttons on the JFrame are as follows:
+  * Return To Nest - Returns all ants back to the nest.  Upon arrival, ants resume activity.
+  * Force Random Walk - Forces all ants to walk randomly for a short time.
+
+
+5. A table of our ants displays the following information:
+  * Nest - Our nest
+  * Team - Our team name
+  * ID - Each ant's ID
+  * Grid X - Ant's x location
+  * Grid Y - Ant's y location
+  * Alive - If ant is alive
+  * Type - Ant type
+  * Carry Type - Carried items' type
+  * Carry Units - Number of units carried
+  * Health - Ant's ant
+  * Underground - If the ant is underground
 
 
 ###Notable Features
-* ...
+* AStar is multithreaded on 12 threads.
+  * The graph is constructed as the path is found.
+* To avoid enemy ants, we draw a rectangle around every friendly ant.  If enemy ants enter this rectangle, our ant will calculate their average location and begin walking int he opposite direction.  This leads to very few deaths from brainless bots.  This only fails when the enemy ants surround our ant.
+* An unimplemented group structure is included in antworld.group.  This structure was designed to have the ants form into groups which will hold travel and battle formations when appropriate.  These groups had different types, similar to ant types, which dictate their main function.  
+  * Due to time constraints higher priorities, this feature was never fully implemented and eventually abandoned.
+* 
