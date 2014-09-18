@@ -136,13 +136,6 @@ public class Graph
 
     if (!Client.allowedArea.contains(new Point(location.getX(), location.getY()))) return 'X';
     
-//    Iterator<Rectangle> antIt = Graph.unwalkableEnemyAntZones.iterator();
-    
-//    while (antIt.hasNext())
-//    {
-//      if (antIt.next().contains(new Point(location.getX(), location.getY()))) return 'X';
-//    }
-    
     Iterator<Rectangle> staticIt = Graph.unwalkableStaticZones.iterator();
     
     while (staticIt.hasNext())

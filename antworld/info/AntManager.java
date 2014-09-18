@@ -68,7 +68,7 @@ public class AntManager
       this.allMyAnts.put(new Integer(tmp.id), new Ant(tmp));
     }
 
-    int waterAnts = 9;
+    int waterAnts = 4;
     Ant tmpAnt = null;
     Iterator<Ant> antIt = this.allMyAnts.values().iterator();
 

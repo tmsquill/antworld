@@ -2,6 +2,7 @@ package antworld.ant;
 
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -21,43 +22,55 @@ import antworld.data.Direction;
 import antworld.data.AntAction.AntActionType;
 import antworld.food.Food;
 
+/**
+ * This class represents an ant which controls an AntData object. AntData is a raw
+ * data set with no decision making, this class adds that functionality.
+ * 
+ * @author Troy Squillaci, J. Jake Nichol
+ */
 public class Ant
 {
   /** Used to multi-thread A* */
   public static AStarDispatcher astar = new AStarDispatcher();
 
-  /** The AntData controlled by this ant */
+  /** The AntData controlled by this ant. */
   private AntData antData;
 
-  /** The current activity the ant is performing, used by the AI */
+  /** The current activity the ant is performing, used by the AI. */
   private ActivityEnum activity = ActivityEnum.SEARCHING_FOR_RESOURCE;
 
-  /** The current gather type the ant is performing, used y the AI */
+  /** The current gather type the ant is performing, used y the AI. */
   private GatheringEnum gather = GatheringEnum.FOOD;
 
-  /** The current list of directions the ant is following, used by the AI */
+  /** The current list of directions the ant is following, used by the AI. */
   private LinkedList<Direction> directions = new LinkedList<Direction>();
-  
+
+  /** Represents a safe zone, if an enemy ant enters the safe zone, the ant flees. */
   private Rectangle safeZone = new Rectangle();
+  
+  /** The list of enemy ants in the safe zone. */ 
+  private ArrayList<Point> enemyInSafeZone = new ArrayList<Point>();
 
   /**
    * Used when food is spotted and the ant is assigned to pick it up, the ant
    * will walk to a pre-determined location around the food and pick it up in
-   * the direction specified here
+   * the direction specified here.
    */
   private Direction pickupDirection;
 
-  /** The current destination of the ant, used by the AI */
+  /** The current destination of the ant, used by the AI. */
   private Location destination;
 
-  /** Specifies a random location above the nest for exiting */
+  /** Specifies a random location above the nest for exiting. */
   private static Random random = Constants.random;
 
-  /** Associates the ant with a group by ID */
+  /** Associates the ant with a group by ID. */
   private int groupID = -1;
 
+  /** Counts the number of failed pickup attempts, if a limit is reached the ant tries a different approach. */
   private int pickupAttempts = 0;
 
+  /** Used to override existing directions with a random walk. */
   private boolean forceDirectedWalk = true;
 
   // Used by the JavaFX GUI.
@@ -74,8 +87,7 @@ public class Ant
   /**
    * Instantiates a new Ant object and associates it with the provided AntData.
    * 
-   * @param antData
-   *          an instance of AntData that this ant will manage
+   * @param antData an instance of AntData that this ant will manage
    */
   public Ant(AntData antData)
   {
@@ -88,53 +100,64 @@ public class Ant
    * The primary AI of the ant. Uses the CommData provided each update to
    * determine the next move.
    * 
-   * @param data
-   *          the latest communications data from the server
-   * @return the next action the ant will attempt to take to be sent to the
-   *         server
+   * @param data the latest communications data from the server
+   * @return the next action the ant will attempt to take to be sent to the server
    */
   public AntAction chooseAction(CommData data)
   {
-    // Default action is STASIS.
+    //Default action is STASIS.
     AntAction action = new AntAction(AntActionType.STASIS);
 
-    // The ant cannot perform an action this tick, so return STASIS to avoid
-    // computation.
+    //The ant cannot perform an action this tick, so return STASIS to avoid computation.
     if (this.getAntData().ticksUntilNextAction > 0) { return action; }
-    
-    safeZone = new Rectangle(this.antData.gridX - 10, this.antData.gridY - 10, 20, 20);
-    
-  AntData tmpEnemy = null;
-  Iterator<AntData> it = data.enemyAntSet.iterator();
-  int deltaX;
-  int deltaY;
-  while (it.hasNext())
-  {
-	  tmpEnemy = it.next();
-    if (this.safeZone.contains(new Point(tmpEnemy.gridX, tmpEnemy.gridY)));
-    {
-    	
-    	this.activity = ActivityEnum.RETREATING;
-//    	deltaX = tmp.gridX - this.antData.gridX;
-//    	deltaY = tmp.gridY - this.antData.gridY;
-//    	
-//    	if (deltaY < 0)
-//    	{
-//    		AntutiDirection.NORTH;
-//    	}
-//        else if (deltaX > 0 && deltaY < 0) Direction.NORTHEAST;
-//        else if (deltaX > 0)  Direction.EAST;
-//        else if (deltaX > 0 && deltaY > 0) Direction.SOUTHEAST;
-//        else if (deltaY > 0)  Direction.SOUTH;
-//        else if (deltaX < 0 && deltaY > 0) Direction.SOUTHWEST;
-//        else if (deltaY < 0)  Direction.WEST;
-//        else if (deltaX < 0 && deltaY < 0) Direction.NORTHWEST;
-//        else return null;
-    
-    }
-  }
 
-    // If the ant is injured, tell it to retreat to the nest.
+    //Update the safe zone boundry of the ant.
+    this.safeZone.setBounds(this.antData.gridX - 30, this.antData.gridY - 30, 60, 60);
+
+    //Check for enemy ants in the safe zone.
+    this.enemyInSafeZone.clear();
+    AntData tmpEnemy = null;
+    Point tmpEnemyPoint = null;
+    Iterator<AntData> it = data.enemyAntSet.iterator();
+
+    while (it.hasNext())
+    {
+      tmpEnemy = it.next();
+      tmpEnemyPoint = new Point(tmpEnemy.gridX, tmpEnemy.gridY);
+      if (this.safeZone.contains(tmpEnemyPoint))
+      {
+        this.enemyInSafeZone.add(tmpEnemyPoint);
+      }
+    }
+
+    //If enemy ants are in the safe zone, then command the ant to change its directions to avoid the enemy ant.
+    if (!this.enemyInSafeZone.isEmpty())
+    {
+      this.directions.clear();
+      int averageX = 0;
+      int averageY = 0;
+      for (Point value : this.enemyInSafeZone)
+      {
+        averageX = averageX + value.x;
+        averageY = averageY + value.y;
+      }
+
+      averageX = averageX / this.enemyInSafeZone.size();
+      averageY = averageY / this.enemyInSafeZone.size();
+
+      Direction run = AntUtilities.getGeneralDirection(new Location(this.antData.gridX, this.antData.gridY),
+          new Location(averageX, averageY));
+
+      run = AntUtilities.getOppositeDirection(run);
+
+      this.directions.push(run);
+
+      action.type = AntActionType.MOVE;
+      action.direction = this.getNextDirection();
+      return action;
+    }
+
+    //If the ant is injured, tell it to retreat to the nest.
     if (this.isInjured() && this.activity != ActivityEnum.RETREATING)
     {
       this.activity = ActivityEnum.RETREATING;
@@ -148,7 +171,7 @@ public class Ant
       return action;
     }
 
-    // If the ant is retreating and is underground, then heal.
+    //If the ant is retreating and is underground, then heal.
     if (this.activity == ActivityEnum.RETREATING && this.antData.underground)
     {
       action.type = AntActionType.HEAL;
@@ -159,8 +182,7 @@ public class Ant
       return action;
     }
 
-    // If the ant is retreating and is on the nest, go underground to heal the
-    // next tick.
+    //If the ant is retreating and is on the nest, go underground to heal the next tick.
     if (this.activity == ActivityEnum.RETREATING
         && Client.nestArea.contains(new Point(this.antData.gridX, this.antData.gridY)))
     {
@@ -168,19 +190,18 @@ public class Ant
       return action;
     }
 
-    // If the ant is still retreating, continue.
+    //If the ant is still retreating, continue.
     if (this.activity == ActivityEnum.RETREATING && !this.directions.isEmpty())
     {
       action.type = AntActionType.MOVE;
       action.direction = this.getNextDirection();
       return action;
     }
-    
 
-    // Ensure the ant on its way home if it has food.
+    //Ensure the ant on its way home if it has food.
     if (this.antData.carryUnits > 0) this.setActivity(ActivityEnum.CARRYING_RESOURCE);
 
-    // If the ant is underground and is not carrying food then exit the nest.
+    //If the ant is underground and is not carrying food then exit the nest.
     if (this.activity != ActivityEnum.CARRYING_RESOURCE && this.getAntData().underground)
     {
       action.type = AntActionType.EXIT_NEST;
@@ -189,8 +210,7 @@ public class Ant
       return action;
     }
 
-    // If the ant is carrying food and it underground then drop the food in the
-    // nest.
+    //If the ant is carrying food and it underground then drop the food in the nest.
     if (this.getActivity() == ActivityEnum.CARRYING_RESOURCE && this.antData.underground)
     {
       this.forceDirectedWalk = true;
@@ -202,7 +222,7 @@ public class Ant
       return action;
     }
 
-    // If the ant is carrying food and on the nest then enter the nest.
+    //If the ant is carrying food and on the nest then enter the nest.
     if (this.getActivity() == ActivityEnum.CARRYING_RESOURCE
         && Client.nestArea.contains(new Point(this.antData.gridX, this.antData.gridY)))
     {
@@ -210,7 +230,7 @@ public class Ant
       return action;
     }
 
-    // If the ant is carrying food, head home.
+    //If the ant is carrying food, head home.
     if (this.getActivity() == ActivityEnum.CARRYING_RESOURCE && this.isDirectionsEmpty())
     {
       this.directions.clear();
@@ -234,6 +254,7 @@ public class Ant
       return action;
     }
 
+    //If the ants fails to pickup the food more than five times then try something else.
     if (this.pickupAttempts > 5)
     {
       System.out.println("Some dumb dumb can't pick up food.");
@@ -251,10 +272,11 @@ public class Ant
       return action;
     }
 
-    if ((Graph.isWater(new Location(this.antData.gridX - 1, this.antData.gridY - 1)) ||
-        Graph.isWater(new Location(this.antData.gridX, this.antData.gridY - 1)) ||
-        Graph.isWater(new Location(this.antData.gridX - 1, this.antData.gridY))) &&
-        this.antData.carryUnits == 0 && this.gather == GatheringEnum.WATER)
+    if ((Graph.isWater(new Location(this.antData.gridX - 1, this.antData.gridY - 1))
+        || Graph.isWater(new Location(this.antData.gridX, this.antData.gridY - 1)) || Graph.isWater(new Location(
+        this.antData.gridX - 1, this.antData.gridY)))
+        && this.antData.carryUnits == 0
+        && this.gather == GatheringEnum.WATER)
     {
       this.directions.clear();
       action.type = AntActionType.PICKUP;
@@ -263,16 +285,30 @@ public class Ant
       return action;
     }
 
-    // If food is around and the ant is not working on getting it, have them get
+    // If food is around and the ant is not working on getting it, have them
+    // get
     // it.
     if (!data.foodSet.isEmpty() && this.getActivity() == ActivityEnum.SEARCHING_FOR_RESOURCE
         && this.gather == GatheringEnum.FOOD)
     {
-      // Loop through food objects and see if any of them need more collectors.
+      // Loop through food objects and see if any of them need more
+      // collectors.
       // If a food object needs another collector, assign this ant to it.
       for (Food value : Client.getActiveFoodManager().getAllFood().values())
       {
-        if (value.isFull()
+        if (value.getCollectors().size() <=2 && AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
+            value.getFoodData().gridY) < this.antData.antType.getVisionRadius() * 4)
+        {
+          this.directions.clear();
+          this.destination = value.addCollector(this);
+
+          this.setDirections(astar.dispatchAStar(new Location(this.antData.gridX, this.antData.gridY), destination));
+          this.setActivity(ActivityEnum.APPROACHING_FOOD);
+          action.type = AntActionType.MOVE;
+          action.direction = this.getNextDirection();
+          return action;
+        }
+        else if (value.isFull()
             || AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
                 value.getFoodData().gridY) > this.antData.antType.getVisionRadius() * 4) continue;
         else
@@ -288,18 +324,18 @@ public class Ant
         }
       }
 
-      if (this.directions.isEmpty()) this.assignRandomDirections(50);
+      if (this.directions.isEmpty()) this.assignRandomDirections(100);
       action.type = AntActionType.MOVE;
       action.direction = this.getNextDirection();
       return action;
     }
 
-    // Ant is looking for resource.
+    //Ant is looking for a resource.
     if (this.getActivity() == ActivityEnum.SEARCHING_FOR_RESOURCE && this.isDirectionsEmpty())
     {
       if (this.gather == GatheringEnum.FOOD)
       {
-        this.assignRandomDirections(50);
+        this.assignRandomDirections(100);
 
         action.type = AntActionType.MOVE;
         action.direction = this.getNextDirection();
@@ -356,6 +392,14 @@ public class Ant
     }
   }
 
+  
+  
+  /**
+   * Assigns random directions to the current ant. Used when searching for food and
+   * can also be forced by the user from the GUI
+   * 
+   * @param distance the number of steps to take in the random direction
+   */
   public void assignRandomDirections(int distance)
   {
     Point randomDestination = new Point();
@@ -407,6 +451,9 @@ public class Ant
     this.setDirections(astar.dispatchAStar(new Location(this.getAntData().gridX, this.getAntData().gridY), destination));
   }
 
+  
+  
+  //TODO
   public void retreatToNest()
   {
     directions.clear();
@@ -421,6 +468,7 @@ public class Ant
     this.antData.myAction.direction = this.getNextDirection();
   }
 
+  //TODO
   public void retreatToLocation(Location end)
   {
     directions.clear();
@@ -435,111 +483,219 @@ public class Ant
     this.antData.myAction.direction = this.getNextDirection();
   }
 
+  
+  //Getter methods.
+  /**
+   * Gets the AntData managed by this ant object.
+   * 
+   * @return the AntData associated with this ant object
+   */
+  public AntData getAntData()
+  {
+    return this.antData;
+  }
+  
+  /**
+   * Gets the current activity type of the ant.
+   * 
+   * @return the current activity type of the ant
+   */
+  public ActivityEnum getActivity()
+  {
+    return this.activity;
+  }
+  
+  /**
+   * Gets the current gathering type of the ant.
+   * 
+   * @return the current gather type of the ant
+   */
+  public GatheringEnum getGathering()
+  {
+    return this.gather;
+  }
+  
+  /**
+   * Gets the location of the current ant. 
+   * 
+   * @return the location of the current ant
+   */
   public Location getCurrentLocation()
   {
     return new Location(this.antData.gridX, this.antData.gridY);
   }
-
-  // get methods
-  public LinkedList<Direction> getDirections()
-  {
-    return this.directions;
-  }
-
+  
+  /**
+   * Gets the current destination of the ant.
+   * 
+   * @return the current destination of the ant
+   */
   public Location getDestination()
   {
     return this.destination;
   }
 
-  public int getGroupID()
+  /**
+   * Gets the current list of directions.
+   * 
+   * @return the current list of directions
+   */
+  public LinkedList<Direction> getDirections()
   {
-    return this.groupID;
+    return this.directions;
   }
-
-  public GatheringEnum getGathering()
-  {
-    return this.gather;
-  }
-
-  public ActivityEnum getActivity()
-  {
-    return this.activity;
-  }
-
+  
+  /**
+   * Gets the next direction from the list of directions. The direction obtained
+   * this was is removed from the list of directions.
+   * 
+   * @return the next direction to be performed by the ant
+   */
   public Direction getNextDirection()
   {
     return this.directions.poll();
   }
-
-  public AntData getAntData()
-  {
-    return this.antData;
-  }
-
-  // set methods
-  public void setDestination(Location destination)
-  {
-    this.destination = destination;
-  }
-
-  public void setGroupID(int groupID)
-  {
-    this.groupID = groupID;
-  }
-
-  public void setAntData(AntData data)
-  {
-    this.antData = data;
-  }
-
-  public void setGathering(GatheringEnum gather)
-  {
-    this.gather = gather;
-  }
-
-  public void setActivity(ActivityEnum activity)
-  {
-    this.activity = activity;
-  }
-
-  public void setDirections(LinkedList<Direction> directions)
-  {
-    this.directions = directions;
-  }
-
-  // is methods
-  public boolean isEncumbered()
-  {
-    return this.antData.carryUnits > ((this.antData.antType.getCarryCapacity() / 2) - 1) ? true : false;
-  }
-
-  public boolean isInjured()
-  {
-    return this.antData.health < (this.antData.antType.getMaxHealth() - 5) ? true : false;
-  }
-
-  public boolean isInGroup()
-  {
-    return this.groupID > 0 ? true : false;
-  }
-
-  public boolean isDirectionsEmpty()
-  {
-    return this.directions.isEmpty();
-  }
-
+  
+  /**
+   * Gets the pickup direction of the ant.
+   * 
+   * @return the pickup direction of the ant
+   */
   public Direction getPickupDirection()
   {
     return this.pickupDirection;
   }
 
-  public void setPickupDirection(Direction dir)
+  /**
+   * Gets the ID of the group that the ant is associated with.
+   * 
+   * @return the group ID associated with the ant
+   */
+  public int getGroupID()
   {
-    this.pickupDirection = dir;
+    return this.groupID;
   }
 
+
+  
+  //Setter methods.
+  /**
+   * Sets the AntData to be associated with this ant object.
+   * 
+   * @param data the AntData to associate with this ant object
+   */
+  public void setAntData(AntData data)
+  {
+    this.antData = data;
+  }
+  
+  /**
+   * Sets the gathering type of the ant.
+   * 
+   * @param activity the activity type to associate with this ant
+   */
+  public void setActivity(ActivityEnum activity)
+  {
+    this.activity = activity;
+  }
+  
+  /**
+   * Sets the gathering type of the ant.
+   * 
+   * @param gather the gathering type to associate with this ant
+   */
+  public void setGathering(GatheringEnum gather)
+  {
+    this.gather = gather;
+  }
+  
+  /**
+   * Sets the destination of the ant to the specified location.
+   * 
+   * @param destination the desired destination of the ant
+   */
+  public void setDestination(Location destination)
+  {
+    this.destination = destination;
+  }
+  
+  /**
+   * Sets the directions of the ant.
+   * 
+   * @param directions a list of directions
+   */
+  public void setDirections(LinkedList<Direction> directions)
+  {
+    this.directions = directions;
+  }
+  
+  /**
+   * Sets the pickup direction of the ant.
+   * 
+   * @param direction the pickup direction
+   */
+  public void setPickupDirection(Direction direction)
+  {
+    this.pickupDirection = direction;
+  }
+
+  /**
+   * Sets the group ID of the ant.
+   * 
+   * @param groupID the ID of the group to associate with this ant
+   */
+  public void setGroupID(int groupID)
+  {
+    this.groupID = groupID;
+  }
+
+
+
+  //Is Methods
+  /**
+   * Determines if the ant is encumbered.
+   * 
+   * @return a boolean indicating if the ant is encumbered
+   */
+  public boolean isEncumbered()
+  {
+    return this.antData.carryUnits > ((this.antData.antType.getCarryCapacity() / 2) - 1) ? true : false;
+  }
+
+  /**
+   * Determines if the ant is injured.
+   * 
+   * @return a boolean indicating if the ant is injured
+   */
+  public boolean isInjured()
+  {
+    return this.antData.health < (this.antData.antType.getMaxHealth() - 5) ? true : false;
+  }
+
+  /**
+   * Determines if the ant is in a group.
+   * 
+   * @return a boolean indicating if the ant is in a group
+   */
+  public boolean isInGroup()
+  {
+    return this.groupID > 0 ? true : false;
+  }
+
+  /**
+   * Determines if the direction list of the ant is empty.
+   * 
+   * @return a boolean indicating if the direction list of the ant is empty
+   */
+  public boolean isDirectionsEmpty()
+  {
+    return this.directions.isEmpty();
+  }
+
+
+  
   /*************************************************************************/
-  /* GUI Methods */
+  //Methods for the JavaFX GUI. Currently unused because the Swing GUI is being used.
   public void updateModel()
   {
     this.nest = new SimpleStringProperty(this.antData.nestName.toString());

@@ -22,7 +22,6 @@ import antworld.data.AntAction;
 import antworld.data.AntData;
 import antworld.data.CommData;
 import antworld.data.Constants;
-import antworld.data.NestData;
 import antworld.data.NestNameEnum;
 import antworld.data.TeamNameEnum;
 import antworld.food.Food;
@@ -30,29 +29,65 @@ import antworld.gui.AntLive;
 import antworld.info.AntManager;
 import antworld.info.FoodManager;
 
+/**
+ * The client for AntWorld. The main method in this class should be the run configuration
+ * if unit testing is not being done.
+ * 
+ * @author Troy Squillaci, J. Jake Nichol
+ */
 public class Client
 {
+  /** Debugging flag for (mainly) networking issues. */ 
   private static final boolean DEBUG_CLIENT = false;
+  
+  /** Debugging flag for general issues. */
   private static final boolean DEBUG_GENERAL = true;
 
+  /** The team name to be used when on the server. */
   private static final TeamNameEnum myTeam = TeamNameEnum.Toothachegrass;
-  private static final long password = 1039840868147L;
-
   
-//  private static final long password = 962740848319L;
+  /** The password associated with the team. */
+  private static final long password = 1039840868147L;
+  
+  /** The nest associated with the team. */
+  private NestNameEnum myNestName = null;
+
+  /** I/O Streams for communication. */
   private ObjectInputStream inputStream = null;
   private ObjectOutputStream outputStream = null;
+  
+  /** Flag indicating if the client is connected to the server. */
   private boolean isConnected = false;
-  private NestNameEnum myNestName = null;
-  public static int centerX, centerY;
+  
+  /** The socket for the connection. */
+  private Socket clientSocket;
+  
+  /** The grid X of the nest. */
+  public static int centerX;
+  
+  /** The grid Y of the nest. */
+  public static int centerY;
+  
+  /** A rectangle contained in the area of the nest. */
   public static Rectangle nestArea;
+  
+  /** A boundary for the ants. No ants can leave this boundary. */
   public static Rectangle allowedArea;
 
-  private Socket clientSocket;
-
+  /** The AntManager for this game session. */
   private static AntManager antManager;
+  
+  /** The FoodManager for this game session. */
   private static FoodManager foodManager;
 
+  
+  
+  /**
+   * Instantiates a new Client object with the specified host and port for connecting to a server.
+   * 
+   * @param host the host for connecting to a server
+   * @param portNumber the port for connecting to a server
+   */
   public Client(String host, int portNumber)
   {
     System.out.println("Starting Client: " + System.currentTimeMillis());
@@ -75,6 +110,15 @@ public class Client
     closeAll();
   }
 
+  
+  
+  /**
+   * Opens a connection to the server specified by the host name and port.
+   * 
+   * @param host the host for connecting to a server
+   * @param portNumber the port for connecting to a server
+   * @return a boolean indicating if the connection was successful
+   */
   private boolean openConnection(String host, int portNumber)
   {
     try
@@ -109,6 +153,11 @@ public class Client
     return true;
   }
 
+  
+  
+  /**
+   * Gracefully closes the I/O streams and exits the program.
+   */
   public void closeAll()
   {
     System.out.println("CLosing I/O streams...");
@@ -128,6 +177,13 @@ public class Client
     System.out.println("All I/O streams closed successfully!");
   }
 
+  
+  
+  /**
+   * Chooses a nest from the list of nests and attempts to check it out for the team.
+   * 
+   * @return the communications data associated with the chosen nest
+   */
   public CommData chooseNest()
   {
     while (myNestName == null)
@@ -182,13 +238,15 @@ public class Client
     return null;
   }
 
+  
+  
+  /**
+   * The main game loop.
+   * 
+   * @param data the communications data received from the server associated with the chosen nest
+   */
   public void mainGameLoop(CommData data)
   {
-    for (NestData value : data.nestData)
-    {
-      System.out.println("Name: " + value.nestName.name() + " Location: (" + value.centerX + ", " + value.centerY + ")");
-    }
-    
     // Initialize managers
     Client.antManager = new AntManager(data);
     Client.foodManager = new FoodManager(data);
@@ -199,9 +257,10 @@ public class Client
     Client.nestArea = new Rectangle(Client.centerX - (Constants.NEST_RADIUS / 2), Client.centerY
         - (Constants.NEST_RADIUS / 2), Constants.NEST_RADIUS, Constants.NEST_RADIUS);
     
-    Client.allowedArea = new Rectangle(Client.centerX - 300, Client.centerY - 200, 600, 400);
+   Client.allowedArea = new Rectangle(Client.centerX - 400, Client.centerY - 300, 800, 600);
     
-    Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y + 525, 150, 75));
+   Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y + 525, 150, 75));
+   Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y, 350, 150));
 
     // Create and show the Swing GUI
     AntLive live = new AntLive();
@@ -258,12 +317,10 @@ public class Client
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
 
-    // TODO This is used only for debugging purposes.
     int i = 0;
 
     while (true)
     {
-      // TODO This is used only for debugging purposes.
       /**********************************************/
       i++;
 
@@ -287,6 +344,7 @@ public class Client
       }
       if (i % 100 == 0)
       {
+    	System.out.println("Ant Count: " + data.myAntList.size());
         System.out.println("Food Stockpile: " + Arrays.toString(data.foodStockPile));
         System.out.println("Food Stockpile Total: " + AntUtilities.getTotalFoodCount(data.foodStockPile));
 
@@ -301,14 +359,7 @@ public class Client
       }
       /**********************************************/
       
-//      Graph.unwalkableEnemyAntZones.clear();
-//      AntData tmp = null;
-//      Iterator<AntData> it = data.enemyAntSet.iterator();
-//      while (it.hasNext())
-//      {
-//        tmp = it.next();
-//        Graph.unwalkableEnemyAntZones.add(new Rectangle(tmp.gridX - 20, tmp.gridY - 20, 40, 40));
-//      }
+      
 
       try
       {
@@ -365,6 +416,14 @@ public class Client
     }
   }
 
+  
+  
+  /**
+   * Sends the updated communications data to the server. Occurs on each iteration of the game loop.
+   * 
+   * @param data the communications data received from the server associated with the chosen nest 
+   * @return a boolean indicating if the data was successfully sent to the server
+   */
   private boolean sendCommData(CommData data)
   {
     CommData sendData = data.packageForSendToServer();
@@ -392,15 +451,30 @@ public class Client
     return true;
   }
 
-  private void chooseActionsOfAllAnts(CommData commData)
+  
+  
+  /**
+   * Chooses the actions of all of the ants, called during each iteration of the main game loop.
+   * 
+   * @param data the communications data received from the server associated with the chosen nest 
+   */
+  private void chooseActionsOfAllAnts(CommData data)
   {
     for (Ant thisAnt : Client.antManager.getAllMyAnts().values())
     {
-      AntAction action = thisAnt.chooseAction(commData);
+      AntAction action = thisAnt.chooseAction(data);
       thisAnt.getAntData().myAction.copyFrom(action);
     }
   }
 
+  
+  
+  /**
+   * Used for debugging to verify that references are maintained betweeen the CommData and the AntManager.
+   * 
+   * @param data the communications data received from the server associated with the chosen nest 
+   * @param manager the active AntManager for this game session
+   */
   public void printComparisons(CommData data, AntManager manager)
   {
     AntData tmpComm = null;
@@ -435,11 +509,24 @@ public class Client
     System.out.println();
   }
 
+  
+  
+  //Getter methods.
+  /**
+   * Gets the active AntManager for the game session.
+   * 
+   * @return the active AntManager
+   */
   public static AntManager getActiveAntManager()
   {
     return Client.antManager;
   }
 
+  /**
+   * Gets the active FoodManager for the game session.
+   * 
+   * @return the active FoodManager
+   */
   public static FoodManager getActiveFoodManager()
   {
     return Client.foodManager;
