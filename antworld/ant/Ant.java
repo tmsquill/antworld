@@ -111,7 +111,7 @@ public class Ant
     //The ant cannot perform an action this tick, so return STASIS to avoid computation.
     if (this.getAntData().ticksUntilNextAction > 0) { return action; }
 
-    //Update the safe zone boundry of the ant.
+    //Update the safe zone boundary of the ant.
     this.safeZone.setBounds(this.antData.gridX - 30, this.antData.gridY - 30, 60, 60);
 
     //Check for enemy ants in the safe zone.
@@ -296,8 +296,8 @@ public class Ant
       // If a food object needs another collector, assign this ant to it.
       for (Food value : Client.getActiveFoodManager().getAllFood().values())
       {
-        if (value.getCollectors().size() <=2 && AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
-            value.getFoodData().gridY) < this.antData.antType.getVisionRadius() * 4)
+        if (value.getCollectors().size() <= 2 && AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
+            value.getFoodData().gridY) < this.antData.antType.getVisionRadius() * 6)
         {
           this.directions.clear();
           this.destination = value.addCollector(this);

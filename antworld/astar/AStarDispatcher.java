@@ -16,16 +16,34 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+/**
+ * This class is a multi-threading environment for A*.
+ * 
+ * @author Troy Squillaci, J. Jake Nichol
+ */
 public class AStarDispatcher
 {
+  /** The number of threads to be utilized when calculating A* */
   private static final int THREADS = 12;
+  
+  /** The multi-threaded environment. */
   private ExecutorService executor = Executors.newFixedThreadPool(THREADS);
 
+  /**
+   * Instantiates a new AStarDispather with the world map.
+   */
   public AStarDispatcher()
   {
     Graph.initializeGraph(Constants.WORLD_MAP_FILEPATH);
   }
 
+  /**
+   * Dispatches a new A* search.
+   * 
+   * @param start the starting location
+   * @param end the destination location
+   * @return the list of directions to the destination
+   */
   public LinkedList<Direction> dispatchAStar(Location start, Location end)
   {
     try
@@ -41,6 +59,9 @@ public class AStarDispatcher
     return null;
   }
 
+  
+  
+  //Unit testing for A*...
   public static void main(String[] args)
   {
     new AStarDispatcher();

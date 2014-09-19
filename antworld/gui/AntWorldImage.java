@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import antworld.ant.Ant;
+import antworld.astar.Graph;
 import antworld.client.Client;
 import antworld.constants.ActivityEnum;
 import antworld.constants.Constants;
@@ -56,6 +58,7 @@ public class AntWorldImage extends JPanel
     this.paintMyAnts(g);
     this.paintEnemyAnts(g);
     this.paintFood(g);
+    this.paintZones(g);
   }
 
   public void paintImage(Graphics g)
@@ -104,5 +107,22 @@ public class AntWorldImage extends JPanel
       tmp = it.next();
       g.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
+  }
+  
+  public void paintZones(Graphics g)
+  {
+    g.setColor(new Color(0xCC0000));
+    Rectangle tmp = null;
+    Iterator<Rectangle> it = Graph.unwalkableStaticZones.iterator();
+    
+    while (it.hasNext())
+    {
+      tmp = it.next();
+      g.drawRect(tmp.x, tmp.y, tmp.width, tmp.height);
+    }
+    
+    g.setColor(new Color(0xFFFFFF));
+    g.drawRect(Client.allowedArea.x, Client.allowedArea.y, Client.allowedArea.width, Client.allowedArea.height);
+    g.drawString("", Client.allowedArea.x, Client.allowedArea.y - 8);
   }
 }
