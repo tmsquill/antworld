@@ -44,14 +44,17 @@ This program must be run with an up to date version of Joel Castellanos' AntWorl
   * White - State is unknown (not seen to occur)
 
 
-4. Buttons on the JFrame are as follows:
+4. Rectangles are drawn over our nest.  
+  * The larger white one indicates the area in which our ants are allowed to roam.  This keeps them from getting too close to enemy territory while still having plenty of food accessible.  
+  * The Smaller red rectangles are areas in which our ants cannot enter.  These were found to have little food, and too many enemies.
+
+
+5. Buttons on the JFrame are as follows:
   * Return To Nest - Returns all ants back to the nest.  Upon arrival, ants resume activity.
   * Force Random Walk - Forces all ants to walk randomly for a short time.
 
 
-5. A table of our ants displays the following information:
-  * Nest - Our nest
-  * Team - Our team name
+6. A table of our ants displays the following information:
   * ID - Each ant's ID
   * Grid X - Ant's x location
   * Grid Y - Ant's y location
