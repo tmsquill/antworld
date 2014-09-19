@@ -2,6 +2,11 @@ package antworld.constants;
 
 import java.awt.Color;
 
+/**
+ * This class lists fields that will never change in the program.
+ * 
+ * @author Troy Squillaci, J. Jake Nichol
+ */
 public class Constants
 {
   public static final boolean DEBUG = true;

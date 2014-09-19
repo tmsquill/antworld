@@ -145,6 +145,11 @@ public class AntManager
     this.visionAnts.clear();
   }
 
+  /**
+   * Gets the list of ants collecting water.
+   *  
+   * @return returns the list of ants collecting water
+   */
   public int getWaterAnts()
   {
     int count = 0;

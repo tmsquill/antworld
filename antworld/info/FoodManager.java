@@ -15,12 +15,24 @@ import antworld.data.FoodType;
 import antworld.food.Food;
 import antworld.gui.FoodCount;
 
+/**
+ * This class represents an food management system that is used to track usage and
+ * discovery of the food.
+ * 
+ * @author Troy Squillaci, J. Jake Nichol
+ */
 public class FoodManager
 {
+  /** The list of food counts. */
   private ArrayList<FoodCount> foodCount = new ArrayList<FoodCount>();
+  
+  /** A HashMap of all food in view of the ants. */
   private HashMap<Location, Food> allFood = new HashMap<Location, Food>();
+  
+  /** The set of all world food. */
   private HashSet<FoodData> worldFood;
 
+  // These values represent the amount of food for each type.
   private int attackFood;
   private int basicFood;
   private int carryFood;
@@ -29,6 +41,11 @@ public class FoodManager
   private int speedFood;
   private int visionFood;
 
+  /**
+   * Instantiates a FoodManager.
+   * 
+   * @param data CommData
+   */
   public FoodManager(CommData data)
   {
     this.worldFood = data.foodSet;
@@ -46,6 +63,11 @@ public class FoodManager
     this.updateAllFood(data);
   }
 
+  /**
+   * Updates all of the food lists from CommData.
+   * 
+   * @param data CommData
+   */
   public void updateAllFood(CommData data)
   {
     Food tmp = null;
@@ -84,16 +106,31 @@ public class FoodManager
     this.worldFood = data.foodSet;
   }
 
+  /**
+   * Gets the list of all food counts.
+   * 
+   * @return returns the list of all food counts.
+   */
   public List<FoodCount> getFoodCounts()
   {
     return this.foodCount;
   }
 
+  /**
+   * Gets the set of world food.
+   * 
+   * @return returns the set of the world food
+   */
   public HashSet<FoodData> getFoodData()
   {
     return this.worldFood;
   }
 
+  /**
+   * Gets the HashMap of all food seen by ants.
+   * 
+   * @return returns the HashMap of all food seen by ants
+   */
   public HashMap<Location, Food> getAllFood()
   {
     return this.allFood;
