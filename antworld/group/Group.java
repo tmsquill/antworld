@@ -1,6 +1,5 @@
 package antworld.group;
 
-import java.awt.Rectangle;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -12,8 +11,7 @@ import antworld.constants.FormationEnum;
 import antworld.constants.GroupTypeEnum;
 
 /**
- * This class represents an ant group object. It is the parent class to all ant
- * groups.
+ * This class represents an ant group object. It is the parent class to all ant groups.
  * 
  * @author Troy Squillaci, J. Jake Nichol
  */
@@ -77,8 +75,7 @@ public abstract class Group implements Comparator<Ant>
   public abstract void startBehavior(FormationEnum formation, Location target);
 
   /**
-   * Given a list of ants, take each ant as necessary and calculate A*
-   * such the ants will align into formation.
+   * Given a list of ants, take each ant as necessary and calculate A* such the ants will align into formation.
    * 
    * @param ants ants in the ant group
    * @param formation formation type
@@ -205,8 +202,8 @@ public abstract class Group implements Comparator<Ant>
   }
 
   /**
-   * Sets point ant of the formation (front) to the ant at the end of the queue.
-   * This ant should be the ant with the least food or is ATTACK/DEFENCE.
+   * Sets point ant of the formation (front) to the ant at the end of the queue. This ant should be the ant with the
+   * least food or is ATTACK/DEFENCE.
    * 
    * @param formationPoint the ant to be the point of the Group
    */
@@ -218,9 +215,8 @@ public abstract class Group implements Comparator<Ant>
   }
 
   /**
-   * Sets rear ant of the formation to the ant second to last in the queue.
-   * This ant should be the ant with the second to least food or is
-   * ATTACK/DEFENCE.
+   * Sets rear ant of the formation to the ant second to last in the queue. This ant should be the ant with the second
+   * to least food or is ATTACK/DEFENCE.
    * 
    * @param formationRear the ant to be the rear of this Group
    */

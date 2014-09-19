@@ -29,6 +29,7 @@ import antworld.constants.Constants;
 import antworld.constants.GatheringEnum;
 import antworld.data.AntData;
 import antworld.data.FoodData;
+import antworld.info.FoodManager;
 
 public class AntWorldImage extends JPanel
 {
@@ -108,21 +109,22 @@ public class AntWorldImage extends JPanel
       g.fillRect(tmp.gridX - 1, tmp.gridY - 1, 3, 3);
     }
   }
-  
+
   public void paintZones(Graphics g)
   {
     g.setColor(new Color(0xCC0000));
     Rectangle tmp = null;
     Iterator<Rectangle> it = Graph.unwalkableStaticZones.iterator();
-    
+
     while (it.hasNext())
     {
       tmp = it.next();
       g.drawRect(tmp.x, tmp.y, tmp.width, tmp.height);
     }
-    
+
     g.setColor(new Color(0xFFFFFF));
     g.drawRect(Client.allowedArea.x, Client.allowedArea.y, Client.allowedArea.width, Client.allowedArea.height);
-    g.drawString("", Client.allowedArea.x, Client.allowedArea.y - 8);
+    g.drawString("Food Stockpile: " + FoodManager.getFoodTotal() + " Water Stockpile: " + FoodManager.getWaterTotal(),
+        Client.allowedArea.x, Client.allowedArea.y - 8);
   }
 }

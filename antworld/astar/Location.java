@@ -1,8 +1,7 @@
 package antworld.astar;
 
 /**
- * This class represents a location on a 2D plane. Objects of this type are
- * immutable.
+ * This class represents a location on a 2D plane. Objects of this type are immutable.
  * 
  * @author Troy Squillaci Date: 08-28-2014
  */

@@ -24,21 +24,19 @@ public class Graph
 {
   /** Map data structure that represents the graph by associating Location keys to Node values. */
   private static BufferedImage image;
-  
+
   /** The map of nodes used by A* */
   private HashMap<Location, Node> nodeMap = new HashMap<Location, Node>();
-  
+
   /** A set of unwalkable zones to control where ants are allowed to walk. */
   public static Set<Rectangle> unwalkableStaticZones = new HashSet<Rectangle>();
 
   /** The starting node. */
   private Node startNode;
-  
+
   /** The destination node. */
   private Node goalNode;
 
-  
-  
   /**
    * Initializes a the graph with a given image.
    * 
@@ -57,8 +55,6 @@ public class Graph
     }
   }
 
-  
-  
   /**
    * Adds a weighted node to the graph at the specified location.
    * 
@@ -84,10 +80,8 @@ public class Graph
   /**
    * Retrieves adjacent nodes that can be traversed.
    * 
-   * @param node
-   *          the node to be inspected for adjacent nodes
-   * @return a set of nodes that are can be traversed and are adjacent to the
-   *         specified node
+   * @param node the node to be inspected for adjacent nodes
+   * @return a set of nodes that are can be traversed and are adjacent to the specified node
    */
   public Set<Node> getInteractiveAdjacentNodes(Node node)
   {
@@ -125,8 +119,6 @@ public class Graph
     this.nodeMap.clear();
   }
 
-  
-  
   /**
    * Determines if the location is water.
    * 
@@ -142,12 +134,9 @@ public class Graph
     return false;
   }
 
-  
-  
   /**
-   * Determines if the location is walkable. If the location is walkable a weight is returned (in this case
-   * almost everything defaults to a weight of 0) otherwise 'X' is returned indicating that the location is not
-   * walkable.
+   * Determines if the location is walkable. If the location is walkable a weight is returned (in this case almost
+   * everything defaults to a weight of 0) otherwise 'X' is returned indicating that the location is not walkable.
    * 
    * @param location the location in question
    * @return a character indicating if the location is walkable and if so the weight associated with it
@@ -155,13 +144,13 @@ public class Graph
   public static char isWalkable(Location location)
   {
     if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return 'X';
-    
+
     if (new Color(Graph.image.getRGB(location.getX(), location.getY())).getBlue() > 230) return 'X';
 
     if (!Client.allowedArea.contains(new Point(location.getX(), location.getY()))) return 'X';
-    
+
     Iterator<Rectangle> staticIt = Graph.unwalkableStaticZones.iterator();
-    
+
     while (staticIt.hasNext())
     {
       if (staticIt.next().contains(new Point(location.getX(), location.getY()))) return 'X';
@@ -173,10 +162,8 @@ public class Graph
   /**
    * Assigns a parent node to the specified set of children nodes.
    * 
-   * @param children
-   *          a set of children nodes
-   * @param parent
-   *          the node that will become the parent of the children nodes
+   * @param children a set of children nodes
+   * @param parent the node that will become the parent of the children nodes
    */
   public void assignParent(Set<Node> children, Node parent)
   {
@@ -211,8 +198,7 @@ public class Graph
   /**
    * Sets the start node in the graph.
    * 
-   * @param start
-   *          the node representing the start of the search
+   * @param start the node representing the start of the search
    */
   public void setStartNode(Node start)
   {
@@ -222,8 +208,7 @@ public class Graph
   /**
    * Sets the goal node in the graph.
    * 
-   * @param goal
-   *          the node representing the start of the search
+   * @param goal the node representing the start of the search
    */
   public void setGoalNode(Node goal)
   {

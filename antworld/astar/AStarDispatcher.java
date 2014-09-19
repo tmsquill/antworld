@@ -25,7 +25,7 @@ public class AStarDispatcher
 {
   /** The number of threads to be utilized when calculating A* */
   private static final int THREADS = 12;
-  
+
   /** The multi-threaded environment. */
   private ExecutorService executor = Executors.newFixedThreadPool(THREADS);
 
@@ -59,9 +59,7 @@ public class AStarDispatcher
     return null;
   }
 
-  
-  
-  //Unit testing for A*...
+  // Unit testing for A*...
   public static void main(String[] args)
   {
     new AStarDispatcher();

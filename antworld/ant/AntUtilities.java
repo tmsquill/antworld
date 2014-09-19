@@ -41,8 +41,6 @@ public class AntUtilities
     }
   }
 
-  
-  
   /**
    * Gets the relative direction from location one to location two.
    * 
@@ -63,15 +61,13 @@ public class AntUtilities
     else if (deltaX < 0 && deltaY > 0) return Direction.SOUTHWEST;
     else if (deltaY < 0) return Direction.WEST;
     else if (deltaX < 0 && deltaY < 0) return Direction.NORTHWEST;
-    else 
+    else
     {
       System.out.println("THEY'RE ON ME LIKE FLIES ON SHIT OVER HERE!!!");
       return Direction.getRandomDir();
     }
   }
 
-  
-  
   /**
    * Gets the total food count of the nest.
    * 
@@ -91,8 +87,6 @@ public class AntUtilities
     return count;
   }
 
-  
-  
   /**
    * Finds the Manhattan distance between two points.
    * 

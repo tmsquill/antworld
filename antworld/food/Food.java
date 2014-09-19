@@ -17,10 +17,10 @@ public class Food
 {
   /** The maximum number of collectors this Food can have. */
   private static final int COLLECTORS = 4;
-  
+
   /** Data from CommData containing information about food in sight. */
   private FoodData foodData;
-  
+
   /** The list of collectors collecting this Food. */
   private List<Ant> collectors = new ArrayList<Ant>();
 

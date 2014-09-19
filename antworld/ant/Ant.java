@@ -23,8 +23,8 @@ import antworld.data.AntAction.AntActionType;
 import antworld.food.Food;
 
 /**
- * This class represents an ant which controls an AntData object. AntData is a raw
- * data set with no decision making, this class adds that functionality.
+ * This class represents an ant which controls an AntData object. AntData is a raw data set with no decision making,
+ * this class adds that functionality.
  * 
  * @author Troy Squillaci, J. Jake Nichol
  */
@@ -47,14 +47,13 @@ public class Ant
 
   /** Represents a safe zone, if an enemy ant enters the safe zone, the ant flees. */
   private Rectangle safeZone = new Rectangle();
-  
-  /** The list of enemy ants in the safe zone. */ 
+
+  /** The list of enemy ants in the safe zone. */
   private ArrayList<Point> enemyInSafeZone = new ArrayList<Point>();
 
   /**
-   * Used when food is spotted and the ant is assigned to pick it up, the ant
-   * will walk to a pre-determined location around the food and pick it up in
-   * the direction specified here.
+   * Used when food is spotted and the ant is assigned to pick it up, the ant will walk to a pre-determined location
+   * around the food and pick it up in the direction specified here.
    */
   private Direction pickupDirection;
 
@@ -97,24 +96,23 @@ public class Ant
   }
 
   /**
-   * The primary AI of the ant. Uses the CommData provided each update to
-   * determine the next move.
+   * The primary AI of the ant. Uses the CommData provided each update to determine the next move.
    * 
    * @param data the latest communications data from the server
    * @return the next action the ant will attempt to take to be sent to the server
    */
   public AntAction chooseAction(CommData data)
   {
-    //Default action is STASIS.
+    // Default action is STASIS.
     AntAction action = new AntAction(AntActionType.STASIS);
 
-    //The ant cannot perform an action this tick, so return STASIS to avoid computation.
+    // The ant cannot perform an action this tick, so return STASIS to avoid computation.
     if (this.getAntData().ticksUntilNextAction > 0) { return action; }
 
-    //Update the safe zone boundary of the ant.
+    // Update the safe zone boundary of the ant.
     this.safeZone.setBounds(this.antData.gridX - 30, this.antData.gridY - 30, 60, 60);
 
-    //Check for enemy ants in the safe zone.
+    // Check for enemy ants in the safe zone.
     this.enemyInSafeZone.clear();
     AntData tmpEnemy = null;
     Point tmpEnemyPoint = null;
@@ -130,7 +128,7 @@ public class Ant
       }
     }
 
-    //If enemy ants are in the safe zone, then command the ant to change its directions to avoid the enemy ant.
+    // If enemy ants are in the safe zone, then command the ant to change its directions to avoid the enemy ant.
     if (!this.enemyInSafeZone.isEmpty())
     {
       this.directions.clear();
@@ -157,7 +155,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is injured, tell it to retreat to the nest.
+    // If the ant is injured, tell it to retreat to the nest.
     if (this.isInjured() && this.activity != ActivityEnum.RETREATING)
     {
       this.activity = ActivityEnum.RETREATING;
@@ -171,7 +169,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is retreating and is underground, then heal.
+    // If the ant is retreating and is underground, then heal.
     if (this.activity == ActivityEnum.RETREATING && this.antData.underground)
     {
       action.type = AntActionType.HEAL;
@@ -182,7 +180,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is retreating and is on the nest, go underground to heal the next tick.
+    // If the ant is retreating and is on the nest, go underground to heal the next tick.
     if (this.activity == ActivityEnum.RETREATING
         && Client.nestArea.contains(new Point(this.antData.gridX, this.antData.gridY)))
     {
@@ -190,7 +188,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is still retreating, continue.
+    // If the ant is still retreating, continue.
     if (this.activity == ActivityEnum.RETREATING && !this.directions.isEmpty())
     {
       action.type = AntActionType.MOVE;
@@ -198,10 +196,10 @@ public class Ant
       return action;
     }
 
-    //Ensure the ant on its way home if it has food.
+    // Ensure the ant on its way home if it has food.
     if (this.antData.carryUnits > 0) this.setActivity(ActivityEnum.CARRYING_RESOURCE);
 
-    //If the ant is underground and is not carrying food then exit the nest.
+    // If the ant is underground and is not carrying food then exit the nest.
     if (this.activity != ActivityEnum.CARRYING_RESOURCE && this.getAntData().underground)
     {
       action.type = AntActionType.EXIT_NEST;
@@ -210,7 +208,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is carrying food and it underground then drop the food in the nest.
+    // If the ant is carrying food and it underground then drop the food in the nest.
     if (this.getActivity() == ActivityEnum.CARRYING_RESOURCE && this.antData.underground)
     {
       this.forceDirectedWalk = true;
@@ -222,7 +220,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is carrying food and on the nest then enter the nest.
+    // If the ant is carrying food and on the nest then enter the nest.
     if (this.getActivity() == ActivityEnum.CARRYING_RESOURCE
         && Client.nestArea.contains(new Point(this.antData.gridX, this.antData.gridY)))
     {
@@ -230,7 +228,7 @@ public class Ant
       return action;
     }
 
-    //If the ant is carrying food, head home.
+    // If the ant is carrying food, head home.
     if (this.getActivity() == ActivityEnum.CARRYING_RESOURCE && this.isDirectionsEmpty())
     {
       this.directions.clear();
@@ -254,10 +252,9 @@ public class Ant
       return action;
     }
 
-    //If the ants fails to pickup the food more than five times then try something else.
+    // If the ants fails to pickup the food more than five times then try something else.
     if (this.pickupAttempts > 5)
     {
-      System.out.println("Some dumb dumb can't pick up food.");
       this.activity = ActivityEnum.SEARCHING_FOR_RESOURCE;
       this.pickupAttempts = 0;
     }
@@ -296,8 +293,9 @@ public class Ant
       // If a food object needs another collector, assign this ant to it.
       for (Food value : Client.getActiveFoodManager().getAllFood().values())
       {
-        if (value.getCollectors().size() <= 2 && AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
-            value.getFoodData().gridY) < this.antData.antType.getVisionRadius() * 6)
+        if (value.getCollectors().size() <= 2
+            && AntUtilities.manhattanDistance(this.antData.gridX, this.antData.gridY, value.getFoodData().gridX,
+                value.getFoodData().gridY) < this.antData.antType.getVisionRadius() * 6)
         {
           this.directions.clear();
           this.destination = value.addCollector(this);
@@ -330,7 +328,7 @@ public class Ant
       return action;
     }
 
-    //Ant is looking for a resource.
+    // Ant is looking for a resource.
     if (this.getActivity() == ActivityEnum.SEARCHING_FOR_RESOURCE && this.isDirectionsEmpty())
     {
       if (this.gather == GatheringEnum.FOOD)
@@ -392,11 +390,9 @@ public class Ant
     }
   }
 
-  
-  
   /**
-   * Assigns random directions to the current ant. Used when searching for food and
-   * can also be forced by the user from the GUI
+   * Assigns random directions to the current ant. Used when searching for food and can also be forced by the user from
+   * the GUI
    * 
    * @param distance the number of steps to take in the random direction
    */
@@ -451,9 +447,7 @@ public class Ant
     this.setDirections(astar.dispatchAStar(new Location(this.getAntData().gridX, this.getAntData().gridY), destination));
   }
 
-  
-  
-  //TODO
+  // TODO
   public void retreatToNest()
   {
     directions.clear();
@@ -468,7 +462,7 @@ public class Ant
     this.antData.myAction.direction = this.getNextDirection();
   }
 
-  //TODO
+  // TODO
   public void retreatToLocation(Location end)
   {
     directions.clear();
@@ -483,8 +477,7 @@ public class Ant
     this.antData.myAction.direction = this.getNextDirection();
   }
 
-  
-  //Getter methods.
+  // Getter methods.
   /**
    * Gets the AntData managed by this ant object.
    * 
@@ -494,7 +487,7 @@ public class Ant
   {
     return this.antData;
   }
-  
+
   /**
    * Gets the current activity type of the ant.
    * 
@@ -504,7 +497,7 @@ public class Ant
   {
     return this.activity;
   }
-  
+
   /**
    * Gets the current gathering type of the ant.
    * 
@@ -514,9 +507,9 @@ public class Ant
   {
     return this.gather;
   }
-  
+
   /**
-   * Gets the location of the current ant. 
+   * Gets the location of the current ant.
    * 
    * @return the location of the current ant
    */
@@ -524,7 +517,7 @@ public class Ant
   {
     return new Location(this.antData.gridX, this.antData.gridY);
   }
-  
+
   /**
    * Gets the current destination of the ant.
    * 
@@ -544,10 +537,10 @@ public class Ant
   {
     return this.directions;
   }
-  
+
   /**
-   * Gets the next direction from the list of directions. The direction obtained
-   * this was is removed from the list of directions.
+   * Gets the next direction from the list of directions. The direction obtained this was is removed from the list of
+   * directions.
    * 
    * @return the next direction to be performed by the ant
    */
@@ -555,7 +548,7 @@ public class Ant
   {
     return this.directions.poll();
   }
-  
+
   /**
    * Gets the pickup direction of the ant.
    * 
@@ -576,9 +569,7 @@ public class Ant
     return this.groupID;
   }
 
-
-  
-  //Setter methods.
+  // Setter methods.
   /**
    * Sets the AntData to be associated with this ant object.
    * 
@@ -588,7 +579,7 @@ public class Ant
   {
     this.antData = data;
   }
-  
+
   /**
    * Sets the gathering type of the ant.
    * 
@@ -598,7 +589,7 @@ public class Ant
   {
     this.activity = activity;
   }
-  
+
   /**
    * Sets the gathering type of the ant.
    * 
@@ -608,7 +599,7 @@ public class Ant
   {
     this.gather = gather;
   }
-  
+
   /**
    * Sets the destination of the ant to the specified location.
    * 
@@ -618,7 +609,7 @@ public class Ant
   {
     this.destination = destination;
   }
-  
+
   /**
    * Sets the directions of the ant.
    * 
@@ -628,7 +619,7 @@ public class Ant
   {
     this.directions = directions;
   }
-  
+
   /**
    * Sets the pickup direction of the ant.
    * 
@@ -649,9 +640,7 @@ public class Ant
     this.groupID = groupID;
   }
 
-
-
-  //Is Methods
+  // Is Methods
   /**
    * Determines if the ant is encumbered.
    * 
@@ -692,10 +681,8 @@ public class Ant
     return this.directions.isEmpty();
   }
 
-
-  
   /*************************************************************************/
-  //Methods for the JavaFX GUI. Currently unused because the Swing GUI is being used.
+  // Methods for the JavaFX GUI. Currently unused because the Swing GUI is being used.
   public void updateModel()
   {
     this.nest = new SimpleStringProperty(this.antData.nestName.toString());

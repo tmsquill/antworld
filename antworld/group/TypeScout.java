@@ -16,7 +16,7 @@ public class TypeScout extends Group
 {
   /** The group type of this group. */
   private static GroupTypeEnum type = GroupTypeEnum.SCOUT;
-  
+
   /** The destination of this group. */
   private Location destination;
 

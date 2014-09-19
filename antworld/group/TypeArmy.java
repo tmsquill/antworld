@@ -14,16 +14,15 @@ import antworld.constants.GroupTypeEnum;
  * @author Troy Squillaci, J. Jake Nichol
  */
 public class TypeArmy extends Group
-{ 
-//  private Ant leader;
-//  private Ant formationPoint;
-//  private Ant formationRear;
-//  private PriorityQueue<Ant> groupList;
+{
+  // private Ant leader;
+  // private Ant formationPoint;
+  // private Ant formationRear;
+  // private PriorityQueue<Ant> groupList;
 
-  
   /** The group type of this group. */
   private static GroupTypeEnum type = GroupTypeEnum.ARMY;
-  
+
   /** The destination of this group. */
   private Location destination;
 

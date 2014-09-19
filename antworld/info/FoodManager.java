@@ -16,8 +16,7 @@ import antworld.food.Food;
 import antworld.gui.FoodCount;
 
 /**
- * This class represents an food management system that is used to track usage and
- * discovery of the food.
+ * This class represents an food management system that is used to track usage and discovery of the food.
  * 
  * @author Troy Squillaci, J. Jake Nichol
  */
@@ -25,12 +24,18 @@ public class FoodManager
 {
   /** The list of food counts. */
   private ArrayList<FoodCount> foodCount = new ArrayList<FoodCount>();
-  
+
   /** A HashMap of all food in view of the ants. */
   private HashMap<Location, Food> allFood = new HashMap<Location, Food>();
-  
+
   /** The set of all world food. */
   private HashSet<FoodData> worldFood;
+
+  /** The total amount of food in the stock pile. */
+  private static int totalFood;
+
+  /** The total amount of water in the stock pile */
+  private static int totalWater;
 
   // These values represent the amount of food for each type.
   private int attackFood;
@@ -102,7 +107,7 @@ public class FoodManager
         managerIt.remove();
       }
     }
-    
+
     this.worldFood = data.foodSet;
   }
 
@@ -170,5 +175,26 @@ public class FoodManager
   public int getVisionFoodCount()
   {
     return this.visionFood;
+  }
+
+  public static int getFoodTotal()
+  {
+    return FoodManager.totalFood;
+  }
+
+  public static int getWaterTotal()
+  {
+    return FoodManager.totalWater;
+  }
+
+  // Set methods for the totals.
+  public static void setFoodTotal(int total)
+  {
+    FoodManager.totalFood = total;
+  }
+
+  public static void setWaterTotal(int total)
+  {
+    FoodManager.totalWater = total;
   }
 }

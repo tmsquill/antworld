@@ -16,7 +16,7 @@ public class TypeHealer extends Group
 {
   /** The group type of this group. */
   private static GroupTypeEnum type = GroupTypeEnum.HEALER;
-  
+
   /** The destination of this group. */
   private Location destination;
 

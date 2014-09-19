@@ -15,8 +15,7 @@ import antworld.data.CommData;
 import antworld.gui.AntCount;
 
 /**
- * This class represents an ant management system that is used to track usage of
- * the ants.
+ * This class represents an ant management system that is used to track usage of the ants.
  */
 public class AntManager
 {
@@ -49,16 +48,14 @@ public class AntManager
 
   /** The list of vision ants. */
   private List<Ant> visionAnts = new ArrayList<Ant>();
-  
+
   /** Number of ants allocated for water collection */
   public static final int WATER_GATHERING_ANTS = 4;
 
   /**
    * Creates a new AntManager object and populates all ant lists and counts.
    *
-   * @param data
-   *          the communications data received from the server that contains
-   *          ants
+   * @param data the communications data received from the server that contains ants
    */
   public AntManager(CommData data)
   {
@@ -87,8 +84,8 @@ public class AntManager
   }
 
   /**
-   * Updates the lists in the AntManager object, this method should be called
-   * when new communications data is received from the server.
+   * Updates the lists in the AntManager object, this method should be called when new communications data is received
+   * from the server.
    */
   public void updateAllAnts(CommData data)
   {
@@ -121,10 +118,8 @@ public class AntManager
   /**
    * Births a new ant.
    *
-   * @param data
-   *          the communications data
-   * @param type
-   *          the type of ant to birth
+   * @param data the communications data
+   * @param type the type of ant to birth
    */
   public void birthAnt(CommData data, AntType type)
   {
@@ -150,7 +145,7 @@ public class AntManager
 
   /**
    * Gets the list of ants collecting water.
-   *  
+   * 
    * @return returns the list of ants collecting water
    */
   public int getWaterAnts()

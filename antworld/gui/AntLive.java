@@ -15,6 +15,7 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import antworld.client.Client;
+import antworld.constants.ActivityEnum;
 import antworld.constants.Constants;
 import antworld.data.AntData;
 import antworld.data.AntType;
@@ -22,6 +23,7 @@ import antworld.data.CommData;
 import antworld.data.NestNameEnum;
 import antworld.data.TeamNameEnum;
 import antworld.ant.Ant;
+import antworld.astar.Location;
 
 public class AntLive extends JPanel
 {
@@ -57,6 +59,8 @@ public class AntLive extends JPanel
     // Add the AntControl
     this.add(antControl, BorderLayout.SOUTH);
 
+    
+    
     // Update the GUI on another thread every so often.
     Timer timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask()
@@ -66,6 +70,7 @@ public class AntLive extends JPanel
       {
         SwingUtilities.invokeLater(new Runnable()
         {
+          int returnToNestAfter = 0;
           @Override
           public void run()
           {
@@ -74,23 +79,21 @@ public class AntLive extends JPanel
 
             // Update the ant table.
             model.fireTableDataChanged();
+            
+            if (++returnToNestAfter % 1350 == 0)
+            {
+              System.out.println("Returning all ants to the nest...");
+              for (Ant ant : Client.getActiveAntManager().getAllMyAnts().values())
+              {
+                ant.setActivity(ActivityEnum.RETREATING);
+                ant.getDirections().clear();
+                ant.setDestination(new Location(Client.centerX, Client.centerY));
+                ant.setDirections(Ant.astar.dispatchAStar(ant.getCurrentLocation(), ant.getDestination()));
+              }
+            }
           }
         });
       }
     }, 0, 2000);
-  }
-  
-  //Unit test for the GUI...
-  public static void main(String[] args)
-  {
-    CommData testData = new CommData(NestNameEnum.BIG_HEADED, TeamNameEnum.Onion);
-    
-    ArrayList<Ant> myAnts = new ArrayList<Ant>();
-    myAnts.add(new Ant(new AntData(123, AntType.ATTACK, NestNameEnum.BIG_HEADED, TeamNameEnum.Onion)));
-    myAnts.add(new Ant(new AntData(124, AntType.MEDIC, NestNameEnum.BIG_HEADED, TeamNameEnum.Onion)));
-    myAnts.add(new Ant(new AntData(125, AntType.DEFENCE, NestNameEnum.BIG_HEADED, TeamNameEnum.Onion)));
-    myAnts.add(new Ant(new AntData(126, AntType.SPEED, NestNameEnum.BIG_HEADED, TeamNameEnum.Onion)));
-    myAnts.add(new Ant(new AntData(127, AntType.VISION, NestNameEnum.BIG_HEADED, TeamNameEnum.Onion)));
-
   }
 }

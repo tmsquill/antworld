@@ -26,7 +26,7 @@ public class AStar implements Callable<LinkedList<Direction>>
 
   /** The starting node. */
   private Node start;
-  
+
   /** THe destination node. */
   private Node finish;
 
@@ -35,8 +35,6 @@ public class AStar implements Callable<LinkedList<Direction>>
    */
   private List<Node> constructedPath = new ArrayList<Node>();
 
-  
-  
   /**
    * Instantiates a new A* object with a provided graph, starting location, and ending location.
    * 
@@ -50,12 +48,10 @@ public class AStar implements Callable<LinkedList<Direction>>
     this.start = start;
     this.finish = finish;
   }
-  
-  
 
   /**
-   * A comparator that compares the F values of nodes. Used for placing nodes
-   * into the open list which is implemented with a priority quene.
+   * A comparator that compares the F values of nodes. Used for placing nodes into the open list which is implemented
+   * with a priority quene.
    * 
    * @author Troy Squillaci, J. Jake Nichol
    */
@@ -68,12 +64,9 @@ public class AStar implements Callable<LinkedList<Direction>>
       return 0;
     }
   }
-  
-  
 
   /**
-   * The A* algorithm that will find the shortest path from the start to the
-   * goal location using a best first search.
+   * The A* algorithm that will find the shortest path from the start to the goal location using a best first search.
    * 
    * @param start the start location where the search will begin
    * @param goal the goal location where the search will end
@@ -142,8 +135,6 @@ public class AStar implements Callable<LinkedList<Direction>>
     return new LinkedList<Direction>();
   }
 
-  
-  
   /**
    * Gets a direction version of the path found by A*.
    * 
@@ -184,8 +175,6 @@ public class AStar implements Callable<LinkedList<Direction>>
 
     return directions;
   }
-  
-  
 
   /**
    * Calculates the integral weight from a character.
@@ -202,8 +191,8 @@ public class AStar implements Callable<LinkedList<Direction>>
   }
 
   /**
-   * The heuristic used to calculate the H value of a node. Uses the Pythagorean
-   * Theorem to calculate distances between locations.
+   * The heuristic used to calculate the H value of a node. Uses the Pythagorean Theorem to calculate distances between
+   * locations.
    * 
    * @param nodeOne the current node
    * @param nodeTwo the destination node (the final goal)
@@ -217,12 +206,9 @@ public class AStar implements Callable<LinkedList<Direction>>
     return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
   }
 
-  
-  
   /**
-   * Constructs a backwards path from the goal node to the start node by
-   * recursively stepping through the parents of each node until the start node
-   * is reached in which case a null parent is found which breaks recursion.
+   * Constructs a backwards path from the goal node to the start node by recursively stepping through the parents of
+   * each node until the start node is reached in which case a null parent is found which breaks recursion.
    * 
    * @param list the list where the constructed path will be stored
    * @param node the goal node
@@ -237,13 +223,10 @@ public class AStar implements Callable<LinkedList<Direction>>
     this.constructPath(node.getParent());
   }
 
-  
-  
   /**
    * Prints a character representation of the constructed path.
    * 
-   * U - Move one node up R - Move one node to the right D - Move one node down
-   * L - Move one node to the left
+   * U - Move one node up R - Move one node to the right D - Move one node down L - Move one node to the left
    */
   public void printConstructedPath()
   {
