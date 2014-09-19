@@ -14,10 +14,10 @@ Troy Squillaci   zivia@unm.edu
 
 ###Project Description
 AntWorld is a multiplayer game in which players control a nest of ants.  Nests are distributed across a map that is populated with several different types of food.  Each type of food is used to birth a new ant of that type (ex. speed food births speed ants).<br> <br>
-Players must write an AI control for the ant nest.  Ants must venture out into the world to collect food and bring it back to the nest.  The ants may encounter agressive ants from other nests, and must act accordingly.  
+Players must write an AI control for the ant nest.  Ants must venture out into the world to collect food and bring it back to the nest.  The ants may encounter aggressive ants from other nests, and must act accordingly.  
 
 ###Our Solution
-Upon exiting the nest, ants begin a psuedo-random walk to find food.  Upon finding food, the nearest ants, up to four, will gravitate to the food.  Ants will pick up the food, plot course for the nest, and set off.  Once at the nest, ants will enter to drop the food, and then exit to restart the search.  If any ant's health drops below 1/4 it's total health, the ant will immediately go to the nest, ant rest there until fully healed.  Additionally, we have a set number of ants collecting water, from the nearest lake, and bringin it back to the nest.  
+Upon exiting the nest, ants begin a psuedo-random walk to find food.  Upon finding food, the nearest ants, up to four, will gravitate to the food.  Ants will pick up the food, plot course for the nest, and set off.  Once at the nest, ants will enter to drop the food, and then exit to restart the search.  If any ant's health drops below 15 health, the ant will immediately go to the nest, and rest there until fully healed.  Additionally, we have a set number of ants collecting water, from the nearest lake, and bringing it back to the nest.  
 \* We have also implemented AStar pathfinding and an avoidance algorithm for when ants are in range of enemies.  See **Notable Features** below for more information on these implementations.
 
 ###How to use
@@ -39,6 +39,8 @@ This program must be run with an up to date version of Joel Castellanos' AntWorl
   * Orange - Searching for food
   * Teal - Approaching discovered food
   * Green - Carrying food back to nest
+  * Yellow - Water gatherer going to water
+  * Red - Water gatherer bringing water to the nest
   * Black - Injured (15 health remaining)
   * Blue - Enemy ant
   * White - State is unknown (not seen to occur)
@@ -69,6 +71,6 @@ This program must be run with an up to date version of Joel Castellanos' AntWorl
 ###Notable Features
 * AStar is multithreaded on 12 threads.
   * The graph is constructed as the path is found.
-* To avoid enemy ants, we draw a rectangle around every friendly ant.  If enemy ants enter this rectangle, our ant will calculate their average location and begin walking int he opposite direction.  This leads to very few deaths from brainless bots.  This only fails when the enemy ants surround our ant.
+* To avoid enemy ants, we draw a rectangle around every friendly ant.  If enemy ants enter this rectangle, our ant will calculate their average location and begin walking in the opposite direction.  This leads to very few deaths from brainless bots.  This only fails when the enemy ants surround our ant.
 * An unimplemented group structure is included in antworld.group.  This structure was designed to have the ants form into groups which will hold travel and battle formations when appropriate.  These groups had different types, similar to ant types, which dictate their main function.  
   * Due to time constraints higher priorities, this feature was never fully implemented and eventually abandoned.
