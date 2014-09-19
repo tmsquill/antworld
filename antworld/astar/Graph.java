@@ -18,24 +18,32 @@ import antworld.data.Direction;
 /**
  * This class represents a graph that associates locations with nodes.
  * 
- * @author Troy Squillaci Date: 08-28-2014
+ * @author Troy Squillaci, J. Jake Nichol
  */
 public class Graph
 {
-  /**
-   * Map data structure that represents the graph by associating Location keys
-   * to Node values.
-   */
+  /** Map data structure that represents the graph by associating Location keys to Node values. */
   private static BufferedImage image;
+  
+  /** The map of nodes used by A* */
   private HashMap<Location, Node> nodeMap = new HashMap<Location, Node>();
   
-//  public static Set<Rectangle> unwalkableEnemyAntZones = new HashSet<Rectangle>();
-  
+  /** A set of unwalkable zones to control where ants are allowed to walk. */
   public static Set<Rectangle> unwalkableStaticZones = new HashSet<Rectangle>();
 
+  /** The starting node. */
   private Node startNode;
+  
+  /** The destination node. */
   private Node goalNode;
 
+  
+  
+  /**
+   * Initializes a the graph with a given image.
+   * 
+   * @param filepath the path to the image
+   */
   public static void initializeGraph(String filepath)
   {
     try
@@ -49,13 +57,13 @@ public class Graph
     }
   }
 
+  
+  
   /**
    * Adds a weighted node to the graph at the specified location.
    * 
-   * @param location
-   *          a location on a 2D plane
-   * @param weight
-   *          the traversal cost of moving to the node
+   * @param location a location on a 2D plane
+   * @param weight the traversal cost of moving to the node
    */
   public void addNode(Location location)
   {
@@ -65,10 +73,8 @@ public class Graph
   /**
    * Retrieves the node at the specified location.
    * 
-   * @param location
-   *          the location of the desired node
-   * @return the node at the specified location, if a node does not exist at the
-   *         location null is returned
+   * @param location the location of the desired node
+   * @return the node at the specified location, if a node does not exist at the location null is returned
    */
   public Node getNode(Location location)
   {
@@ -119,6 +125,14 @@ public class Graph
     this.nodeMap.clear();
   }
 
+  
+  
+  /**
+   * Determines if the location is water.
+   * 
+   * @param location the location in question
+   * @return a boolean indicating if the location is water
+   */
   public static boolean isWater(Location location)
   {
     if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return false;
@@ -128,6 +142,16 @@ public class Graph
     return false;
   }
 
+  
+  
+  /**
+   * Determines if the location is walkable. If the location is walkable a weight is returned (in this case
+   * almost everything defaults to a weight of 0) otherwise 'X' is returned indicating that the location is not
+   * walkable.
+   * 
+   * @param location the location in question
+   * @return a character indicating if the location is walkable and if so the weight associated with it
+   */
   public static char isWalkable(Location location)
   {
     if (location.getX() < 0 || location.getX() > 4999 || location.getY() < 0 || location.getY() > 2499) return 'X';

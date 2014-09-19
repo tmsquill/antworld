@@ -1,6 +1,5 @@
 package antworld.astar;
 
-import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,22 +12,22 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.Callable;
 
-import antworld.client.Client;
 import antworld.data.Direction;
 
 /**
  * This class implements the A* algorithm.
  * 
- * @author Troy Squillaci Date: 08-28-2014
+ * @author Troy Squillaci, J. Jake Nichol
  */
 public class AStar implements Callable<LinkedList<Direction>>
 {
-  /**
-   * A graph that represents the map.
-   */
+  /** A graph that represents the map. */
   private Graph activeGraph;
 
+  /** The starting node. */
   private Node start;
+  
+  /** THe destination node. */
   private Node finish;
 
   /**
@@ -36,18 +35,29 @@ public class AStar implements Callable<LinkedList<Direction>>
    */
   private List<Node> constructedPath = new ArrayList<Node>();
 
+  
+  
+  /**
+   * Instantiates a new A* object with a provided graph, starting location, and ending location.
+   * 
+   * @param graph the graph to search
+   * @param start the starting location
+   * @param finish the destination location
+   */
   public AStar(Graph graph, Node start, Node finish)
   {
     this.activeGraph = graph;
     this.start = start;
     this.finish = finish;
   }
+  
+  
 
   /**
    * A comparator that compares the F values of nodes. Used for placing nodes
    * into the open list which is implemented with a priority quene.
    * 
-   * @author Troy Squillaci Date: 08-28-2014
+   * @author Troy Squillaci, J. Jake Nichol
    */
   public class NodeComparator implements Comparator<Node>
   {
@@ -58,15 +68,15 @@ public class AStar implements Callable<LinkedList<Direction>>
       return 0;
     }
   }
+  
+  
 
   /**
    * The A* algorithm that will find the shortest path from the start to the
    * goal location using a best first search.
    * 
-   * @param start
-   *          the start location where the search will begin
-   * @param goal
-   *          the goal location where the search will end
+   * @param start the start location where the search will begin
+   * @param goal the goal location where the search will end
    * @return a list of ordered nodes on the graph representing the shortest path
    */
   @Override
@@ -132,6 +142,14 @@ public class AStar implements Callable<LinkedList<Direction>>
     return new LinkedList<Direction>();
   }
 
+  
+  
+  /**
+   * Gets a direction version of the path found by A*.
+   * 
+   * @param constructedPath the output of A*
+   * @return a list of directions to the destination
+   */
   public LinkedList<Direction> getDirections(List<Node> constructedPath)
   {
     LinkedList<Direction> directions = new LinkedList<Direction>();
@@ -166,12 +184,13 @@ public class AStar implements Callable<LinkedList<Direction>>
 
     return directions;
   }
+  
+  
 
   /**
    * Calculates the integral weight from a character.
    * 
-   * @param weight
-   *          a character representation of the weight
+   * @param weight a character representation of the weight
    * @return the integral value of the weight
    */
   private double calcWeight(char weight)
@@ -186,10 +205,8 @@ public class AStar implements Callable<LinkedList<Direction>>
    * The heuristic used to calculate the H value of a node. Uses the Pythagorean
    * Theorem to calculate distances between locations.
    * 
-   * @param nodeOne
-   *          the current node
-   * @param nodeTwo
-   *          the destination node (the final goal)
+   * @param nodeOne the current node
+   * @param nodeTwo the destination node (the final goal)
    * @return the distance between the two nodes
    */
   private double calcHeuristic(Node nodeOne, Node nodeTwo)
@@ -200,17 +217,16 @@ public class AStar implements Callable<LinkedList<Direction>>
     return Math.sqrt((deltaX * deltaX) + (deltaY * deltaY));
   }
 
+  
+  
   /**
    * Constructs a backwards path from the goal node to the start node by
    * recursively stepping through the parents of each node until the start node
    * is reached in which case a null parent is found which breaks recursion.
    * 
-   * @param list
-   *          the list where the constructed path will be stored
-   * @param node
-   *          the goal node
-   * @return a list of nodes containing a backwards path that goes from the goal
-   *         node to the start node
+   * @param list the list where the constructed path will be stored
+   * @param node the goal node
+   * @return a list of nodes containing a backwards path that goes from the goal node to the start node
    */
   private void constructPath(Node node)
   {
@@ -221,6 +237,8 @@ public class AStar implements Callable<LinkedList<Direction>>
     this.constructPath(node.getParent());
   }
 
+  
+  
   /**
    * Prints a character representation of the constructed path.
    * 

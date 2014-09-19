@@ -49,6 +49,9 @@ public class AntManager
 
   /** The list of vision ants. */
   private List<Ant> visionAnts = new ArrayList<Ant>();
+  
+  /** Number of ants allocated for water collection */
+  public static final int WATER_GATHERING_ANTS = 4;
 
   /**
    * Creates a new AntManager object and populates all ant lists and counts.
@@ -68,7 +71,7 @@ public class AntManager
       this.allMyAnts.put(new Integer(tmp.id), new Ant(tmp));
     }
 
-    int waterAnts = 4;
+    int waterAnts = AntManager.WATER_GATHERING_ANTS;
     Ant tmpAnt = null;
     Iterator<Ant> antIt = this.allMyAnts.values().iterator();
 
@@ -76,7 +79,7 @@ public class AntManager
     {
       tmpAnt = antIt.next();
       tmpAnt.setGathering(GatheringEnum.WATER);
-      if (waterAnts <= 0) break;
+      if (waterAnts == 1) break;
       waterAnts--;
     }
 

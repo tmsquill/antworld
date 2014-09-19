@@ -260,161 +260,148 @@ public class Client
    Client.allowedArea = new Rectangle(Client.centerX - 400, Client.centerY - 300, 800, 600);
     
    Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y + 525, 150, 75));
-   Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y, 350, 150));
+   Graph.unwalkableStaticZones.add(new Rectangle(Client.allowedArea.x, Client.allowedArea.y, 350, 125));
 
-    // Create and show the Swing GUI
-    AntLive live = new AntLive();
-    JFrame frame = new JFrame("Live Ant Statistics");
+   // Create and show the Swing GUI
+   AntLive live = new AntLive();
+   JFrame frame = new JFrame("Live Ant Statistics");
 
-    WindowListener exitListener = new WindowListener()
-    {
-      @Override
-      public void windowOpened(WindowEvent e)
-      {
-      }
+   WindowListener exitListener = new WindowListener()
+   {
+     @Override
+     public void windowOpened(WindowEvent e) {}
 
-      @Override
-      public void windowClosing(WindowEvent e)
-      {
-        int confirm = JOptionPane.showOptionDialog(null, "Close Ant World?", "Exit Confirmation",
-            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
-        if (confirm == 0)
-        {
-          closeAll();
-          System.exit(0);
-        }
-      }
+     @Override
+     public void windowClosing(WindowEvent e)
+     {
+       int confirm = JOptionPane.showOptionDialog(null, "Close Ant World?", "Exit Confirmation",
+           JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+       if (confirm == 0)
+       {
+         closeAll();
+         System.exit(0);
+       }
+     }
 
-      @Override
-      public void windowClosed(WindowEvent e)
-      {
-      }
+     @Override
+     public void windowClosed(WindowEvent e) {}
 
-      @Override
-      public void windowIconified(WindowEvent e)
-      {
-      }
+     @Override
+     public void windowIconified(WindowEvent e) {}
 
-      @Override
-      public void windowDeiconified(WindowEvent e)
-      {
-      }
+     @Override
+     public void windowDeiconified(WindowEvent e) {}
 
-      @Override
-      public void windowActivated(WindowEvent e)
-      {
-      }
+     @Override
+     public void windowActivated(WindowEvent e) {}
 
-      @Override
-      public void windowDeactivated(WindowEvent e)
-      {
-      }
-    };
-    frame.addWindowListener(exitListener);
+     @Override
+     public void windowDeactivated(WindowEvent e) {}
+   };
+   frame.addWindowListener(exitListener);
 
-    frame.add(live);
-    frame.pack();
-    frame.setLocationRelativeTo(null);
-    frame.setVisible(true);
+   frame.add(live);
+   frame.pack();
+   frame.setLocationRelativeTo(null);
+   frame.setVisible(true);
 
-    int i = 0;
+   int i = 0;
 
-    while (true)
-    {
-      /**********************************************/
-      i++;
+   while (true)
+   {
+     /**********************************************/
+     i++;
 
-      if (i % 20 == 0)
-      {
-        if (Client.DEBUG_GENERAL)
-        {
-          System.out.println("=================================================================");
-          System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size()
-              + ") food packets.");
+     if (i % 20 == 0)
+     {
+       if (Client.DEBUG_GENERAL)
+       {
+         System.out.println("=================================================================");
+         System.out.println("There are (" + data.foodSet.size() + " - " + Client.foodManager.getAllFood().size()
+             + ") food packets.");
 
-          int totalCollectors = 0;
-          for (Food thisFood : foodManager.getAllFood().values())
-          {
-            totalCollectors += thisFood.getCollectors().size();
-          }
+         int totalCollectors = 0;
+         for (Food thisFood : foodManager.getAllFood().values())
+         {
+           totalCollectors += thisFood.getCollectors().size();
+         }
 
-          System.out.println("There are " + totalCollectors + " ants approaching food.");
-          System.out.println("=================================================================");
-        }
-      }
-      if (i % 100 == 0)
-      {
-    	System.out.println("Ant Count: " + data.myAntList.size());
-        System.out.println("Food Stockpile: " + Arrays.toString(data.foodStockPile));
-        System.out.println("Food Stockpile Total: " + AntUtilities.getTotalFoodCount(data.foodStockPile));
+         System.out.println("There are " + totalCollectors + " ants approaching food.");
+         System.out.println("=================================================================");
+       }
+     }
+     if (i % 100 == 0)
+     {
+       System.out.println("Ant Count: " + data.myAntList.size());
+       System.out.println("Food Stockpile: " + Arrays.toString(data.foodStockPile));
+       System.out.println("Food Stockpile Total: " + AntUtilities.getTotalFoodCount(data.foodStockPile));
 
-        Ant tmp = null;
-        Iterator<Ant> it = Client.antManager.getAllMyAnts().values().iterator();
+       Ant tmp = null;
+       Iterator<Ant> it = Client.antManager.getAllMyAnts().values().iterator();
 
-        while (it.hasNext())
-        {
-          tmp = it.next();
-          if (tmp.getAntData().carryUnits > 0 && tmp.getGathering() == GatheringEnum.FOOD) System.out.println(tmp);
-        }
-      }
-      /**********************************************/
-      
-      
+       while (it.hasNext())
+       {
+         tmp = it.next();
+         if (tmp.getAntData().carryUnits > 0 && tmp.getGathering() == GatheringEnum.FOOD) System.out.println(tmp);
+       }
+     }
+     /**********************************************/
+     
+     
 
-      try
-      {
-        if (DEBUG_CLIENT) System.out.println("Client: chooseActions: " + myNestName);
+     try
+     {
+       if (DEBUG_CLIENT) System.out.println("Client: chooseActions: " + myNestName);
 
-        chooseActionsOfAllAnts(data);
+       chooseActionsOfAllAnts(data);
 
-        CommData sendData = data.packageForSendToServer();
+       CommData sendData = data.packageForSendToServer();
 
-        if (DEBUG_CLIENT) System.out.println("ClientRandomWalk: Sending >>>>>>>: " + sendData);
-        outputStream.writeObject(sendData);
-        outputStream.flush();
-        outputStream.reset();
+       if (DEBUG_CLIENT) System.out.println("ClientRandomWalk: Sending >>>>>>>: " + sendData);
+       outputStream.writeObject(sendData);
+       outputStream.flush();
+       outputStream.reset();
 
-        if (DEBUG_CLIENT) System.out.println("Client: listening to socket....");
-        CommData recivedData = (CommData) inputStream.readObject();
-        if (DEBUG_CLIENT)
-          System.out.println("Client: received <<<<<<<<<" + inputStream.available() + "<...\n" + recivedData);
-        data = recivedData;
+       if (DEBUG_CLIENT) System.out.println("Client: listening to socket....");
+       CommData recivedData = (CommData) inputStream.readObject();
+       if (DEBUG_CLIENT)
+         System.out.println("Client: received <<<<<<<<<" + inputStream.available() + "<...\n" + recivedData);
+       data = recivedData;
 
-        Client.antManager.updateAllAnts(data);
-        Client.foodManager.updateAllFood(data);
+       Client.antManager.updateAllAnts(data);
+       Client.foodManager.updateAllFood(data);
 
-        if ((myNestName == null) || (data.myTeam != myTeam))
-        {
-          System.err.println("Client: !!!!ERROR!!!! " + myNestName);
-        }
-      }
-      catch (IOException e)
-      {
-        System.err.println("Client ***ERROR***: client read failed");
-        e.printStackTrace();
-        try
-        {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e1)
-        {
-        }
-
-      }
-      catch (ClassNotFoundException e)
-      {
-        System.err.println("ServerToClientConnection***ERROR***: client sent incorect data format");
-        e.printStackTrace();
-        try
-        {
-          Thread.sleep(1000);
-        }
-        catch (InterruptedException e1)
-        {
-        }
-      }
-    }
-  }
+       if ((myNestName == null) || (data.myTeam != myTeam))
+       {
+         System.err.println("Client: !!!!ERROR!!!! " + myNestName);
+       }
+     }
+     catch (IOException e)
+     {
+       System.err.println("Client ***ERROR***: client read failed");
+       e.printStackTrace();
+       try
+       {
+         Thread.sleep(1000);
+       }
+       catch (InterruptedException e1)
+       {
+       }
+     }
+     catch (ClassNotFoundException e)
+     {
+       System.err.println("ServerToClientConnection***ERROR***: client sent incorect data format");
+       e.printStackTrace();
+       try
+       {
+         Thread.sleep(1000);
+       }
+       catch (InterruptedException e1)
+       {
+       }
+     }
+   }
+ }
 
   
   
