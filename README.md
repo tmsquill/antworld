@@ -27,6 +27,10 @@ This program must be run with an up to date version of Joel Castellanos' AntWorl
 
 
 1. Package the java project into an executable jar.
+  * Choose Client.java for the run configuration.  This has the main method to be executed.  
+  * Other main methods are used for testing only.
+
+
 2. From the terminal, run:
 
 
